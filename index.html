@@ -24,6 +24,7 @@
   --warn:#B86A00; --warn-bg:rgba(230,140,0,.14);
   --bad:#C62D22; --bad-bg:rgba(198,45,34,.10);
   --heat0:#E3E3DE; --heat1:#F2DE86; --heat2:#FFD400;
+  --s0:#E5484D; --s1:#F28C28; --s2:#F2C94C; --s3:#9CCB4A; --s4:#239B4E;
   --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(0,0,0,.05);
   --r:20px;
   --t-pierna:#FF7A45; --t-caminadora:#E0B800; --t-upper:#2F9BD6; --t-hyrox:#A45CE0; --t-trote:#1E9E6A; --t-descanso:#9A9AA0; --t-carrera:#141414;
@@ -37,6 +38,7 @@
     --warn:#FFA526; --warn-bg:rgba(255,165,38,.14);
     --bad:#FF5A4E; --bad-bg:rgba(255,90,78,.13);
     --heat0:#232327; --heat1:#6B5A12; --heat2:#FFD400;
+    --s0:#E5484D; --s1:#F2994A; --s2:#E8C547; --s3:#A8D65E; --s4:#30D158;
     --shadow:none;
     --t-caminadora:#FFD400; --t-carrera:#F4F4F3;
   }
@@ -161,8 +163,12 @@ main{padding:4px calc(16px + env(safe-area-inset-right)) calc(96px + env(safe-ar
 .meals{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0 8px}
 .meal{min-height:54px;border-radius:14px;background:var(--surface2);font-size:13px;font-weight:650;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.1;padding:4px}
 .meal.on{background:var(--accent);color:var(--on-accent)}
-.ring{--p:0;width:44px;height:44px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--surface2) 0);display:grid;place-items:center;flex:none}
-.ring span{width:34px;height:34px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:13px;font-weight:800}
+.ring{--p:0;width:58px;height:58px;border-radius:50%;background:conic-gradient(var(--ring,var(--accent)) calc(var(--p)*1%),var(--surface2) 0);display:grid;place-items:center;flex:none}
+.ring span{width:46px;height:46px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:17px;font-weight:800;line-height:1}
+.ring span small{display:block;font-size:10px;color:var(--muted);font-weight:700}
+.pts{display:flex;flex-wrap:wrap;gap:5px;margin-top:6px}
+.pts span{font-size:12px;font-weight:650;padding:3px 7px;border-radius:7px;background:var(--surface2);color:var(--muted)}
+.pts span.full{color:var(--text)}
 
 /* Streaks */
 .stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
@@ -183,6 +189,12 @@ main{padding:4px calc(16px + env(safe-area-inset-right)) calc(96px + env(safe-ar
 .hc.fut{opacity:.35}
 .hc.today{outline:2px solid var(--text);outline-offset:1px}
 .hc.race{background:var(--text)}
+.hc.s0{background:var(--s0)} .hc.s1{background:var(--s1)} .hc.s2{background:var(--s2)} .hc.s3{background:var(--s3)} .hc.s4{background:var(--s4)}
+.hc[data-action]{cursor:pointer}
+.avg{display:flex;gap:10px;margin-top:14px}
+.avg div{flex:1;background:var(--surface2);border-radius:12px;padding:9px 10px}
+.avg small{display:block;font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.avg strong{font-size:20px;font-weight:800}
 .hl{font-size:10px;color:var(--muted);font-weight:600;line-height:1;align-self:center;white-space:nowrap;overflow:visible}
 .legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:12px;color:var(--muted)}
 .legend span{display:inline-flex;align-items:center;gap:5px}
@@ -467,6 +479,8 @@ const CONFIG = {
     { t: 'Comida', s: 'nunca la saltes' },
     { t: 'Cena', s: '' },
   ],
+  // Calificación del día (suma 10). En días de descanso los puntos de clase se dan solos.
+  puntos: { clase: 4, comida: 0.5, proteina: 2, agua: 1, sueno: 1 },
   notasComida: 'Carbohidratos (arroz, papa, pasta, tortilla, avena), sobre todo antes y después de entrenar.',
 };
 
@@ -574,8 +588,29 @@ function diaVacio() { return { clase: null, comidas: [false, false, false, false
 function diaLog(s) { const d = storage.get('dias', {})[s]; return d ? { ...diaVacio(), ...d } : diaVacio(); }
 function setDia(s, patch) { const dias = storage.get('dias', {}); dias[s] = { ...diaLog(s), ...patch }; storage.set('dias', dias); }
 const habitosOk = l => !!(l.proteina && l.comidas.every(Boolean));
-const habitosCore = l => (l.comidas.every(Boolean) ? 1 : 0) + (l.proteina ? 1 : 0) + (l.agua ? 1 : 0) + (l.sueno ? 1 : 0);
 const algunHabito = l => l.comidas.some(Boolean) || l.proteina || l.agua || l.sueno;
+
+/* ---------- Calificación del día (0–10) ---------- */
+function puntosDia(f, l) {
+  const P = CONFIG.puntos, toca = esSesion(sesionDe(f));
+  const partes = {
+    clase:    { v: toca ? (l.clase === 'hecha' ? P.clase : 0) : P.clase, max: P.clase, t: toca ? 'Clase' : 'Descanso' },
+    comidas:  { v: l.comidas.filter(Boolean).length * P.comida, max: P.comida * 4, t: 'Comidas' },
+    proteina: { v: l.proteina ? P.proteina : 0, max: P.proteina, t: 'Proteína' },
+    agua:     { v: l.agua ? P.agua : 0, max: P.agua, t: 'Agua' },
+    sueno:    { v: l.sueno ? P.sueno : 0, max: P.sueno, t: 'Sueño' },
+  };
+  const total = Object.values(partes).reduce((a, p) => a + p.v, 0);
+  return { total: Math.round(total * 10) / 10, partes };
+}
+// null = sin registro (no sabemos). Un día de clase ya pasado sin nada registrado cuenta como 0.
+function calificacion(f) {
+  const raw = storage.get('dias', {})[f];
+  if (!raw) return (f < hoy() && f >= CONFIG.inicio && esSesion(sesionDe(f))) ? puntosDia(f, diaVacio()) : null;
+  return puntosDia(f, { ...diaVacio(), ...raw });
+}
+const nivelCal = t => t >= 10 ? 4 : t >= 8 ? 3 : t >= 5 ? 2 : t >= 2.5 ? 1 : 0;
+const fCal = t => Number.isInteger(t) ? String(t) : t.toFixed(1);
 
 /* ---------- Rachas ---------- */
 function rachaSemanal() {
@@ -700,7 +735,7 @@ function avisosDe(f, esHoy) {
 /* =====================================================================
    UI
    ===================================================================== */
-const state = { tab: 'hoy', fecha: null, heat: 'clases', plan: null };
+const state = { tab: 'hoy', fecha: null, heat: 'dia', plan: null };
 const $ = s => document.querySelector(s);
 const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
 const I = {
@@ -853,15 +888,16 @@ function tarjetaSesion(f, H) {
 }
 
 function tarjetaHabitos(f, H) {
-  const log = diaLog(f), futuro = f > H, n = habitosCore(log), rd = rachaDiaria();
+  const log = diaLog(f), futuro = f > H, rd = rachaDiaria(), cal = puntosDia(f, log);
   const dis = futuro ? 'disabled' : '';
   const meals = CONFIG.comidas.map((c, i) => `<button class="meal ${log.comidas[i] ? 'on' : ''}" data-action="comida" data-v="${i}" ${dis}>${esc(c.t)}${c.s ? `<span class="xs" style="font-weight:500;opacity:.75">${esc(c.s)}</span>` : ''}</button>`).join('');
   const habs = CONFIG.habitos.map(h => `<button class="hab ${log[h.k] ? 'on' : ''}" data-action="habito" data-v="${h.k}" ${dis}>
       <span class="chk">${I.check}</span><span class="grow"><span class="t">${esc(h.t)}</span><br><span class="s">${esc(h.s)}</span></span></button>`).join('');
   return `<div class="card">
     <div class="row between" style="margin-bottom:10px">
-      <div><h2 style="margin:0">Hábitos ${f === H ? 'de hoy' : 'del día'}</h2><div class="muted xs">${rd.actual ? `Racha: ${rd.actual} ${rd.actual === 1 ? 'día' : 'días'} con proteína + 4 comidas` : 'Proteína + 4 comidas = día de racha'}</div></div>
-      <div class="ring" style="--p:${n / 4 * 100}"><span class="num">${n}/4</span></div>
+      <div class="grow"><h2 style="margin:0">Tu día ${f === H ? 'de hoy' : ''}</h2><div class="muted xs">${rd.actual ? `Racha: ${rd.actual} ${rd.actual === 1 ? 'día' : 'días'} con proteína + 4 comidas` : 'Proteína + 4 comidas = día de racha'}</div>
+        <div class="pts">${Object.values(cal.partes).map(p => `<span class="${p.v >= p.max ? 'full' : ''}">${p.t} ${fCal(p.v)}/${fCal(p.max)}</span>`).join('')}</div></div>
+      <div class="ring" style="--p:${cal.total * 10};--ring:var(--s${nivelCal(cal.total)})" aria-label="Calificación ${fCal(cal.total)} de 10"><span class="num">${fCal(cal.total)}<small>/10</small></span></div>
     </div>
     <div class="small" style="font-weight:650">4 comidas <span class="muted">· ${log.comidas.filter(Boolean).length}/4</span></div>
     <div class="meals">${meals}</div>
@@ -879,7 +915,8 @@ function vistaRachas() {
     <div class="stat"><div class="l">Hábitos</div><div class="v num">${rd.actual}</div><div class="u">${rd.actual === 1 ? 'día' : 'días'} seguidos</div><div class="best">${animo(rd, rd.mejor === 1 ? 'día' : 'días')}</div></div>
   </div>`;
 
-  html += `<div class="card"><div class="seg"><button class="${state.heat === 'clases' ? 'on' : ''}" data-action="heat" data-v="clases">Clases</button><button class="${state.heat === 'habitos' ? 'on' : ''}" data-action="heat" data-v="habitos">Hábitos</button></div>${heatmap()}</div>`;
+  const segBtn = (v, t) => `<button class="${state.heat === v ? 'on' : ''}" data-action="heat" data-v="${v}">${t}</button>`;
+  html += `<div class="card"><div class="seg">${segBtn('dia', 'Calificación')}${segBtn('clases', 'Clases')}${segBtn('habitos', 'Hábitos')}</div>${heatmap()}${state.heat === 'dia' ? promediosCal() : ''}</div>`;
 
   const ult = rs.semanas.slice(-6).reverse();
   html += `<div class="card"><h2>Semanas <small>meta del plan</small></h2>${ult.length ? ult.map(w => `<div class="wk"><span class="${w.actual ? '' : 'muted'}">${w.actual ? 'Esta semana' : 'Sem. ' + fDia(w.lunes)}</span>
@@ -905,6 +942,10 @@ function heatmap() {
       let cls = '';
       if (x > CONFIG.carrera.fecha) cls = 'rest fut';
       else if (ses.tipo === 'carrera') cls = 'race';
+      else if (state.heat === 'dia') {
+        const c = x <= H ? calificacion(x) : null;
+        cls = c ? 's' + nivelCal(c.total) : 'rest';
+      }
       else if (state.heat === 'clases') {
         if (lg && lg.clase === 'hecha') cls = 'l2';
         else if (!esSesion(ses)) cls = 'rest';
@@ -915,13 +956,26 @@ function heatmap() {
       }
       if (x > H && ses.tipo !== 'carrera') cls += ' fut';
       if (x === H) cls += ' today';
-      cells += `<i class="hc ${cls}" title="${fCorta(x)}"></i>`;
+      const tip = state.heat === 'dia' && x <= H && calificacion(x) ? ` · ${fCal(calificacion(x).total)}/10` : '';
+      cells += `<i class="hc ${cls}" title="${fCorta(x)}${tip}" ${x <= CONFIG.carrera.fecha ? `data-action="ir-dia" data-v="${x}"` : ''}></i>`;
     }
   }
-  const leg = state.heat === 'clases'
+  const leg = state.heat === 'dia'
+    ? '<span><i style="background:var(--s4)"></i>10</span><span><i style="background:var(--s3)"></i>8–9.5</span><span><i style="background:var(--s2)"></i>5–7.5</span><span><i style="background:var(--s1)"></i>2.5–4.5</span><span><i style="background:var(--s0)"></i>0–2</span><span><i style="box-shadow:inset 0 0 0 1px var(--line)"></i>Sin registro</span>'
+    : state.heat === 'clases'
     ? '<span><i style="background:var(--heat2)"></i>Hecha</span><span><i style="box-shadow:inset 0 0 0 1.5px var(--faint)"></i>No fui</span><span><i style="background:var(--heat0)"></i>Pendiente</span><span><i style="box-shadow:inset 0 0 0 1px var(--line)"></i>Descanso</span><span><i style="background:var(--text)"></i>Carrera</span>'
     : '<span><i style="background:var(--heat2)"></i>Proteína + 4 comidas</span><span><i style="background:var(--heat1)"></i>Parcial</span><span><i style="background:var(--heat0)"></i>Nada</span>';
   return `<div class="heat" style="grid-template-columns:12px repeat(${nW},minmax(0,1fr))">${cells}</div><div class="legend">${leg}</div>`;
+}
+
+function promediosCal() {
+  const H = hoy(), prom = (desde) => {
+    const v = []; for (let x = desde; x <= H; x = addDays(x, 1)) { const c = calificacion(x); if (c) v.push(c.total); }
+    return v.length ? fCal(Math.round(v.reduce((a, b) => a + b, 0) / v.length * 10) / 10) : '—';
+  };
+  let diez = 0; for (let x = CONFIG.inicio; x <= H; x = addDays(x, 1)) { const c = calificacion(x); if (c && c.total >= 10) diez++; }
+  return `<div class="avg"><div><small>Últimos 7 días</small><strong class="num">${prom(addDays(H, -6))}</strong></div><div><small>Todo el plan</small><strong class="num">${prom(CONFIG.inicio)}</strong></div><div><small>Días 10/10</small><strong class="num">${diez}</strong></div></div>
+    <p class="muted xs" style="margin:10px 0 0">Clase 4 · comidas 2 · proteína 2 · agua 1 · sueño 1. En descanso la clase cuenta sola. Toca un cuadrito para ver o corregir ese día.</p>`;
 }
 
 /* ---------- CHECKPOINTS ---------- */
@@ -1390,6 +1444,7 @@ function archivoRespaldo() {
 const ACTIONS = {
   tab(d) { state.tab = d.v; if (d.v !== 'hoy') state.fecha = null; render(); window.scrollTo(0, 0); },
   'ver-dia'(d) { state.fecha = d.v === hoy() ? null : d.v; render(); },
+  'ir-dia'(d) { state.fecha = d.v === hoy() ? null : d.v; state.tab = 'hoy'; render(); window.scrollTo(0, 0); },
   'ver-hoy'() { state.fecha = null; render(); },
   semana(d) { state.fecha = addDays(state.fecha || hoy(), +d.v); if (state.fecha === hoy()) state.fecha = null; render(); },
   clase(d) {
