@@ -1,0 +1,1509 @@
+<!DOCTYPE html>
+<html lang="es-MX">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="HYROX">
+<meta name="theme-color" content="#F3F3EF" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0B0B0C" media="(prefers-color-scheme: dark)">
+<meta name="format-detection" content="telephone=no">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="apple-touch-icon" href="icon-180.png">
+<link rel="icon" type="image/png" href="icon-192.png">
+<title>HYROX Santiago</title>
+<style>
+:root{
+  color-scheme: light dark;
+  --bg:#F3F3EF; --surface:#FFFFFF; --surface2:#ECECE7; --line:rgba(0,0,0,.09);
+  --text:#141414; --muted:#6A6A6F; --faint:#A3A3A8;
+  --accent:#FFD400; --on-accent:#141414; --accent-text:#8A6B00; --real:#B08A00;
+  --ok:#1E8E4E; --ok-bg:rgba(30,142,78,.12);
+  --warn:#B86A00; --warn-bg:rgba(230,140,0,.14);
+  --bad:#C62D22; --bad-bg:rgba(198,45,34,.10);
+  --heat0:#E3E3DE; --heat1:#F2DE86; --heat2:#FFD400;
+  --shadow:0 1px 2px rgba(0,0,0,.04),0 6px 20px rgba(0,0,0,.05);
+  --r:20px;
+  --t-pierna:#FF7A45; --t-caminadora:#E0B800; --t-upper:#2F9BD6; --t-hyrox:#A45CE0; --t-trote:#1E9E6A; --t-descanso:#9A9AA0; --t-carrera:#141414;
+}
+@media (prefers-color-scheme: dark){
+  :root{
+    --bg:#0B0B0C; --surface:#161618; --surface2:#222226; --line:rgba(255,255,255,.08);
+    --text:#F4F4F3; --muted:#9C9CA3; --faint:#5E5E64;
+    --accent-text:#FFD400; --real:#FFD400;
+    --ok:#32D16A; --ok-bg:rgba(50,209,106,.14);
+    --warn:#FFA526; --warn-bg:rgba(255,165,38,.14);
+    --bad:#FF5A4E; --bad-bg:rgba(255,90,78,.13);
+    --heat0:#232327; --heat1:#6B5A12; --heat2:#FFD400;
+    --shadow:none;
+    --t-caminadora:#FFD400; --t-carrera:#F4F4F3;
+  }
+}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--text)}
+body{font:16px/1.4 -apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Roboto,system-ui,sans-serif;-webkit-font-smoothing:antialiased;-webkit-text-size-adjust:100%;overscroll-behavior-y:none}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;border:0;background:none;padding:0;touch-action:manipulation}
+.num{font-variant-numeric:tabular-nums}
+#app{max-width:560px;margin:0 auto;min-height:100vh}
+
+/* Header */
+.top{position:sticky;top:0;z-index:20;background:color-mix(in srgb,var(--bg) 88%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(18px);backdrop-filter:saturate(1.6) blur(18px);
+  padding:calc(env(safe-area-inset-top) + 10px) calc(16px + env(safe-area-inset-right)) 10px calc(16px + env(safe-area-inset-left));display:flex;align-items:flex-end;justify-content:space-between;gap:12px}
+.top .kicker{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.top h1{margin:2px 0 0;font-size:28px;line-height:1.1;letter-spacing:-.02em;font-weight:800}
+.iconbtn{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:var(--surface);box-shadow:var(--shadow);flex:none}
+.iconbtn svg{width:22px;height:22px}
+
+main{padding:4px calc(16px + env(safe-area-inset-right)) calc(96px + env(safe-area-inset-bottom)) calc(16px + env(safe-area-inset-left))}
+.stack>*+*{margin-top:12px}
+.card{background:var(--surface);border-radius:var(--r);padding:18px;box-shadow:var(--shadow)}
+.card h2{margin:0 0 12px;font-size:17px;font-weight:700;letter-spacing:-.01em;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.card h2 small{font-weight:600;color:var(--muted);font-size:14px}
+.muted{color:var(--muted)}
+.small{font-size:14px}
+.xs{font-size:12px}
+.row{display:flex;align-items:center;gap:10px}
+.between{justify-content:space-between}
+.wrap{flex-wrap:wrap}
+.grow{flex:1;min-width:0}
+.sect{font-size:13px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin:22px 4px 8px}
+
+/* Chips & badges */
+.chip{display:inline-flex;align-items:center;gap:6px;height:28px;padding:0 11px;border-radius:99px;background:var(--surface2);font-size:13px;font-weight:600;white-space:nowrap}
+.chip.accent{background:var(--accent);color:var(--on-accent)}
+.chip .dot{width:8px;height:8px;border-radius:50%}
+.badge{display:inline-flex;align-items:center;height:24px;padding:0 9px;border-radius:8px;font-size:12px;font-weight:700;white-space:nowrap}
+.b-ok{background:var(--ok-bg);color:var(--ok)}
+.b-warn{background:var(--warn-bg);color:var(--warn)}
+.b-bad{background:var(--bad-bg);color:var(--bad)}
+.b-mute{background:var(--surface2);color:var(--muted)}
+.b-acc{background:var(--accent);color:var(--on-accent)}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:52px;padding:0 18px;border-radius:16px;font-weight:700;font-size:17px;background:var(--surface2);transition:transform .08s}
+.btn:active{transform:scale(.97)}
+.btn.primary{background:var(--accent);color:var(--on-accent)}
+.btn.ghost{background:transparent;box-shadow:inset 0 0 0 1.5px var(--line)}
+.btn.danger{background:var(--bad);color:#fff}
+.btn.sm{min-height:40px;font-size:15px;border-radius:12px;padding:0 14px}
+.btn.block{width:100%}
+.btn[disabled]{opacity:.4;pointer-events:none}
+.link{color:var(--accent-text);font-weight:600;font-size:14px;padding:6px 0}
+
+/* Hero */
+.hero{background:var(--text);color:var(--bg);border-radius:24px;padding:20px;position:relative;overflow:hidden}
+.hero .big{font-size:64px;font-weight:800;letter-spacing:-.04em;line-height:.95}
+.hero .lbl{font-size:15px;font-weight:600;opacity:.75}
+.hero .chip{background:color-mix(in srgb,var(--bg) 16%,transparent);color:var(--bg)}
+.hero .chip.accent{background:var(--accent);color:var(--on-accent)}
+.hero .bar{height:6px;border-radius:9px;background:color-mix(in srgb,var(--bg) 18%,transparent);margin-top:16px;overflow:hidden}
+.hero .bar i{display:block;height:100%;background:var(--accent);border-radius:9px}
+.hero .stripe{position:absolute;right:-30px;top:18px;width:150px;height:14px;background:repeating-linear-gradient(90deg,var(--accent) 0 18px,transparent 18px 36px);transform:rotate(-35deg);opacity:.9}
+
+/* Alerts */
+.alert{border-radius:18px;padding:14px 16px;display:flex;gap:12px;align-items:flex-start}
+.alert .ic{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;flex:none;font-weight:800;font-size:15px}
+.alert.acc{background:color-mix(in srgb,var(--accent) 22%,var(--surface))}
+.alert.acc .ic{background:var(--accent);color:var(--on-accent)}
+.alert.info{background:var(--surface)}
+.alert.info .ic{background:var(--surface2)}
+.alert.warn{background:var(--warn-bg)}
+.alert.warn .ic{background:var(--warn);color:#fff}
+.alert b{display:block;font-size:15px}
+.alert p{margin:2px 0 0;font-size:14px;color:var(--muted)}
+.alert .btn{margin-top:10px}
+
+/* Week strip */
+.week{display:grid;grid-template-columns:28px repeat(7,1fr) 28px;gap:4px;align-items:center}
+.week .nav{height:56px;display:grid;place-items:center;color:var(--muted);font-size:20px}
+.day{height:62px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;font-size:12px;color:var(--muted);font-weight:600}
+.day .n{font-size:16px;color:var(--text);font-weight:700}
+.day .st{width:8px;height:8px;border-radius:50%}
+.day.sel{background:var(--surface2);box-shadow:inset 0 0 0 2px var(--text)}
+.day.today .n{color:var(--accent-text)}
+.st.hecha{background:var(--accent)}
+.st.nofui{box-shadow:inset 0 0 0 2px var(--faint)}
+.st.pend{box-shadow:inset 0 0 0 2px var(--text)}
+.st.rest{background:var(--line)}
+.st.race{background:var(--text)}
+
+/* Session card */
+.ses{position:relative}
+.ses .kick{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:700;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.ses .kick .dot{width:10px;height:10px;border-radius:50%}
+.ses h3{font-size:26px;line-height:1.12;margin:8px 0 10px;letter-spacing:-.02em;font-weight:800}
+.meta{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+.meta .chip svg{width:14px;height:14px}
+.box{background:var(--surface2);border-radius:14px;padding:12px 14px;font-size:14px}
+.box+.box{margin-top:8px}
+.box b{display:block;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.tags{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.tag{background:var(--surface);border-radius:8px;padding:3px 8px;font-size:13px;font-weight:600}
+.acts{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:14px}
+.done-banner{display:flex;align-items:center;gap:10px;margin-top:14px;padding:14px;border-radius:16px;background:var(--accent);color:var(--on-accent);font-weight:700}
+.done-banner svg,.btn svg{width:22px;height:22px;flex:none}
+.done-banner.miss{background:var(--surface2);color:var(--text)}
+.done-banner button{margin-left:auto;font-size:14px;font-weight:700;text-decoration:underline;color:inherit}
+.tomorrow{display:flex;gap:10px;align-items:center;font-size:14px;padding:12px 16px;background:var(--surface);border-radius:16px}
+
+/* Habits */
+.hab{display:flex;align-items:center;gap:14px;width:100%;min-height:60px;padding:8px 2px;text-align:left;border-top:1px solid var(--line)}
+.hab:first-of-type{border-top:0}
+.chk{width:30px;height:30px;border-radius:50%;flex:none;display:grid;place-items:center;box-shadow:inset 0 0 0 2px var(--faint);transition:all .15s}
+.chk svg{width:18px;height:18px;opacity:0}
+.on .chk{background:var(--accent);box-shadow:none;color:var(--on-accent)}
+.on .chk svg{opacity:1}
+.hab .t{font-weight:650;font-size:16px}
+.hab .s{font-size:13px;color:var(--muted)}
+.meals{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:4px 0 8px}
+.meal{min-height:54px;border-radius:14px;background:var(--surface2);font-size:13px;font-weight:650;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;line-height:1.1;padding:4px}
+.meal.on{background:var(--accent);color:var(--on-accent)}
+.ring{--p:0;width:44px;height:44px;border-radius:50%;background:conic-gradient(var(--accent) calc(var(--p)*1%),var(--surface2) 0);display:grid;place-items:center;flex:none}
+.ring span{width:34px;height:34px;border-radius:50%;background:var(--surface);display:grid;place-items:center;font-size:13px;font-weight:800}
+
+/* Streaks */
+.stats{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.stat{background:var(--surface);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.stat .v{font-size:44px;font-weight:800;letter-spacing:-.03em;line-height:1}
+.stat .u{font-size:14px;font-weight:600;color:var(--muted)}
+.stat .l{font-size:13px;font-weight:700;margin-bottom:8px}
+.stat .best{font-size:13px;color:var(--muted);margin-top:8px}
+.seg{display:grid;grid-auto-flow:column;grid-auto-columns:1fr;background:var(--surface2);border-radius:12px;padding:3px;gap:3px}
+.seg button{min-height:36px;border-radius:9px;font-size:14px;font-weight:650;color:var(--muted)}
+.seg button.on{background:var(--surface);color:var(--text);box-shadow:var(--shadow)}
+.heat{display:grid;gap:3px;margin-top:14px}
+.hc{aspect-ratio:1;border-radius:3px;background:var(--heat0)}
+.hc.l1{background:var(--heat1)}
+.hc.l2{background:var(--heat2)}
+.hc.rest{background:transparent;box-shadow:inset 0 0 0 1px var(--line)}
+.hc.miss{background:transparent;box-shadow:inset 0 0 0 1.5px var(--faint)}
+.hc.fut{opacity:.35}
+.hc.today{outline:2px solid var(--text);outline-offset:1px}
+.hc.race{background:var(--text)}
+.hl{font-size:10px;color:var(--muted);font-weight:600;line-height:1;align-self:center;white-space:nowrap;overflow:visible}
+.legend{display:flex;flex-wrap:wrap;gap:12px;margin-top:12px;font-size:12px;color:var(--muted)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:11px;height:11px;border-radius:3px;display:inline-block}
+.wk{display:grid;grid-template-columns:92px 1fr 44px;gap:10px;align-items:center;font-size:14px;padding:6px 0}
+.pbar{height:10px;border-radius:9px;background:var(--surface2);overflow:hidden}
+.pbar i{display:block;height:100%;background:var(--accent);border-radius:9px}
+
+/* Checkpoints */
+.cp{border-left:4px solid transparent}
+.cp.next{border-left-color:var(--accent)}
+.cp .hd{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.cp .date{font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em}
+.cp .ttl{font-size:18px;font-weight:800;letter-spacing:-.01em;margin-top:2px}
+.kv{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-top:12px}
+.kv div{background:var(--surface2);border-radius:12px;padding:9px 10px}
+.kv small{display:block;font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.05em}
+.kv strong{font-size:17px;font-weight:800}
+.kv em{display:block;font-style:normal;font-size:12px;font-weight:700;margin-top:2px}
+.rec{margin-top:10px;border-radius:14px;padding:12px 14px;font-size:14px}
+.rec b{display:block;margin-bottom:2px}
+.rec.ok{background:var(--ok-bg)} .rec.warn{background:var(--warn-bg)} .rec.bad{background:var(--bad-bg)} .rec.acc{background:color-mix(in srgb,var(--accent) 22%,var(--surface))}
+.goal{display:flex;align-items:center;gap:10px;margin-top:12px;padding-top:12px;border-top:1px solid var(--line)}
+.goal .g{flex:1;font-size:14px;font-weight:600}
+.tri{display:flex;gap:6px}
+.tri button{min-height:38px;padding:0 12px;border-radius:10px;background:var(--surface2);font-size:13px;font-weight:700;color:var(--muted)}
+.tri button.on-ok{background:var(--ok);color:#fff}
+.tri button.on-no{background:var(--text);color:var(--bg)}
+
+/* Charts */
+.chart{width:100%;height:auto;display:block;overflow:visible}
+.chart .grid{stroke:var(--line);stroke-width:1}
+.chart .axis{fill:var(--muted);font-size:10px;font-weight:600}
+.chart .meta{stroke:var(--faint);stroke-width:2;fill:none;stroke-dasharray:5 5}
+.chart .real{stroke:var(--real);stroke-width:3;fill:none;stroke-linecap:round;stroke-linejoin:round}
+.chart .pt{fill:var(--real);stroke:var(--surface);stroke-width:2}
+.chart .tope{stroke:var(--bad);stroke-width:1.5;stroke-dasharray:4 4}
+.chart .band{fill:var(--ok-bg)}
+.chart .todayl{stroke:var(--text);stroke-width:1;opacity:.35}
+.chart .vl{fill:var(--text);font-size:11px;font-weight:800}
+.chart .tl{font-size:10px;font-weight:700}
+.empty{padding:26px 10px;text-align:center;color:var(--muted);font-size:14px}
+.trow{display:flex;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--line);font-size:15px}
+.trow:first-child{border-top:0}
+.del{width:36px;height:36px;border-radius:10px;color:var(--muted);font-size:20px;display:grid;place-items:center}
+
+/* Plan */
+.phase{display:grid;grid-template-columns:34px 1fr;gap:12px;padding:12px 0;border-top:1px solid var(--line)}
+.phase:first-of-type{border-top:0}
+.phase .n{width:34px;height:34px;border-radius:11px;background:var(--surface2);display:grid;place-items:center;font-weight:800}
+.phase.cur .n{background:var(--accent);color:var(--on-accent)}
+.phase.past{opacity:.55}
+.phase .t{font-weight:750}
+.pd{display:grid;grid-template-columns:44px 1fr;gap:10px;padding:10px 0;border-top:1px solid var(--line);align-items:start}
+.pd:first-child{border-top:0}
+.pd .dn{font-weight:800;font-size:14px;padding-top:1px}
+.pd .c{font-weight:650}
+.pd.today{background:color-mix(in srgb,var(--accent) 16%,transparent);border-radius:10px;padding-left:6px;padding-right:6px;margin:0 -6px}
+.hscroll{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;margin:0 -18px 12px;padding:0 18px}
+.hscroll::-webkit-scrollbar{display:none}
+.hscroll .chip{height:34px;font-size:14px}
+details{border-top:1px solid var(--line);padding:12px 0}
+details:first-of-type{border-top:0;padding-top:0}
+summary{font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center;min-height:32px}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-size:20px;color:var(--muted)}
+details[open] summary::after{content:"–"}
+details ul{margin:8px 0 0;padding-left:20px;font-size:14px}
+details li+li{margin-top:4px}
+
+/* Tab bar */
+.tabs{position:fixed;left:0;right:0;bottom:0;z-index:30;background:color-mix(in srgb,var(--surface) 90%,transparent);-webkit-backdrop-filter:saturate(1.6) blur(20px);backdrop-filter:saturate(1.6) blur(20px);border-top:1px solid var(--line);
+  padding:6px calc(8px + env(safe-area-inset-right)) calc(6px + env(safe-area-inset-bottom)) calc(8px + env(safe-area-inset-left))}
+.tabs .in{max-width:560px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr)}
+.tab{display:flex;flex-direction:column;align-items:center;gap:3px;min-height:52px;justify-content:center;font-size:11px;font-weight:650;color:var(--muted)}
+.tab svg{width:25px;height:25px}
+.tab.on{color:var(--text)}
+.tab.on svg{color:var(--text)}
+.tab.on .pip{background:var(--accent)}
+.pip{width:18px;height:3px;border-radius:3px;background:transparent;margin-top:1px}
+
+/* Modal / sheet */
+.backdrop{position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:50;animation:fade .15s}
+.sheet{position:fixed;left:0;right:0;bottom:0;z-index:51;max-width:560px;margin:0 auto;background:var(--bg);border-radius:24px 24px 0 0;max-height:92vh;overflow-y:auto;-webkit-overflow-scrolling:touch;
+  padding:10px calc(18px + env(safe-area-inset-right)) calc(20px + env(safe-area-inset-bottom)) calc(18px + env(safe-area-inset-left));animation:up .22s cubic-bezier(.2,.9,.3,1)}
+.sheet .grab{width:40px;height:5px;border-radius:3px;background:var(--faint);margin:0 auto 12px}
+.sheet h2{font-size:22px;margin:0 0 4px;font-weight:800;letter-spacing:-.02em}
+@keyframes up{from{transform:translateY(40px);opacity:0}}
+@keyframes fade{from{opacity:0}}
+.field{display:block;margin-top:12px}
+.field span{display:block;font-size:13px;font-weight:700;color:var(--muted);margin-bottom:5px}
+.input{width:100%;min-height:50px;border-radius:14px;border:0;background:var(--surface);box-shadow:inset 0 0 0 1px var(--line);padding:0 14px;font-size:17px;-webkit-appearance:none;appearance:none}
+textarea.input{padding:12px 14px;min-height:110px;font-size:14px;font-family:ui-monospace,Menlo,monospace}
+select.input{background-image:linear-gradient(45deg,transparent 50%,var(--muted) 50%),linear-gradient(135deg,var(--muted) 50%,transparent 50%);background-position:calc(100% - 20px) 50%,calc(100% - 14px) 50%;background-size:6px 6px;background-repeat:no-repeat;padding-right:36px}
+.input:focus{outline:none;box-shadow:inset 0 0 0 2px var(--text)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.edday{background:var(--surface);border-radius:16px;padding:12px 14px;margin-top:10px}
+.edday .field{margin-top:8px}
+.edday .input{min-height:44px;font-size:16px;background:var(--bg)}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom));transform:translateX(-50%) translateY(20px);background:var(--text);color:var(--bg);padding:12px 18px;border-radius:14px;font-weight:700;font-size:15px;z-index:60;opacity:0;transition:all .2s;pointer-events:none;max-width:calc(100% - 32px);text-align:center}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+.upload{display:flex;gap:14px;align-items:center}
+.upload .ic-big{width:52px;height:60px;border-radius:12px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-weight:900;font-size:14px;flex:none;letter-spacing:.03em}
+.spinner{width:44px;height:44px;margin:26px auto;border-radius:50%;border:4px solid var(--surface2);border-top-color:var(--accent);animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.field em.miss{font-style:normal;color:var(--warn)}
+.input.leido{box-shadow:inset 0 0 0 2px var(--ok)}
+img.hoja{display:block;width:100%;border-radius:12px;margin-top:12px;background:#fff}
+pre.ocr{white-space:pre-wrap;word-break:break-word;font:11px/1.4 ui-monospace,Menlo,monospace;max-height:260px;overflow:auto;background:var(--surface);border-radius:12px;padding:10px;margin:8px 0 0}
+.extras{font-size:13px;color:var(--muted);margin-top:8px}
+.debug{position:fixed;top:calc(env(safe-area-inset-top) + 4px);left:50%;transform:translateX(-50%);z-index:40;background:var(--bad);color:#fff;font-size:11px;font-weight:800;padding:2px 8px;border-radius:6px}
+</style>
+</head>
+<body>
+<div id="app">
+  <header class="top">
+    <div class="grow"><div class="kicker" id="kicker"></div><h1 id="titulo">Hoy</h1></div>
+    <button class="iconbtn" data-action="ajustes" aria-label="Ajustes y respaldo">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></svg>
+    </button>
+  </header>
+  <main id="view" class="stack"></main>
+</div>
+<nav class="tabs" aria-label="Secciones"><div class="in" id="tabs"></div></nav>
+<div id="modal"></div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+'use strict';
+/* =====================================================================
+   CONFIGURACIÓN — todo el plan vive aquí. Edita fechas, metas y semanas.
+   Fuente: 01_contexto_plan_hyrox.md
+   ===================================================================== */
+const CONFIG = {
+  zonaHoraria: 'America/Mexico_City',
+  atleta: { nombre: 'Santiago', pesoInicial: 65.8, fechaPesoInicial: '2026-09-27', pesoMeta: 70 },
+  carrera: { fecha: '2027-02-19', nombre: 'HYROX Cancún 2027', lugar: 'Malecón Tajamar, Zona Hotelera', categoria: 'Doubles', meta: 'Sub 65 min' },
+  inicio: '2026-09-28',
+
+  fases: [
+    { n: 1, nombre: 'Base',         inicio: '2026-09-28', fin: '2026-11-01', objetivo: 'Fuerza, motor aeróbico, técnica de wall balls y sled pull.' },
+    { n: 2, nombre: 'Construcción', inicio: '2026-11-02', fin: '2026-12-13', objetivo: 'Más volumen de carrera, intervalos, estaciones con peso de competencia.' },
+    { n: 3, nombre: 'Vacaciones',   inicio: '2026-12-14', fin: '2027-01-03', objetivo: 'Mantener con 4 sesiones por semana.', nota: 'Vacaciones: 4 sesiones esta semana. Lo importante es no perder lo ganado.' },
+    { n: 4, nombre: 'Específica',   inicio: '2027-01-04', fin: '2027-02-07', objetivo: 'Simulacros, correr cansado, relevos con tu compañero.', nota: 'Fase específica: corre cansado y practica relevos con tu compañero.' },
+    { n: 5, nombre: 'Descarga',     inicio: '2027-02-08', fin: '2027-02-19', objetivo: 'Bajar volumen para llegar fresco.', nota: 'Descarga: haz la clase pero más ligera (≈60% del esfuerzo). Llegar fresco es la meta.' },
+  ],
+
+  // Periodos escolares → qué semana tipo usan
+  periodos: [
+    { id: 'p1',    nombre: 'Periodo 1 del Tec', inicio: '2026-09-28', fin: '2026-10-25', semana: 'actual',
+      horario: 'Lun 11:00–13:00 · Mar 7:00–10:30, 11:00–13:00, 13:30–14:45 · Mié 7:00–10:30 · Jue 11:00–13:00 · Vie igual que martes' },
+    { id: 'tec',   nombre: 'Semana Tec',        inicio: '2026-10-26', fin: '2026-11-01', semana: 'semanatec',
+      horario: 'Lunes a viernes 10:30–13:10' },
+    { id: 'p2',    nombre: 'Último periodo',    inicio: '2026-11-02', fin: '2026-12-06', semana: 'ultimo',
+      horario: 'Lun 17:00–18:40 · Mar 7:00–10:40, 11:00–13:10, 13:20–14:40 · Mié 7:00–10:40 y 17:00–18:40 · Jue libre · Vie igual que martes' },
+    { id: 'cierre',nombre: 'Cierre de semestre',inicio: '2026-12-07', fin: '2026-12-13', semana: 'ultimo',
+      horario: 'Se mantiene la estructura del último periodo.' },
+    { id: 'vac',   nombre: 'Vacaciones',        inicio: '2026-12-14', fin: '2027-01-03', semana: 'vacaciones',
+      horario: 'Sin clases en el Tec.' },
+    { id: 'ene',   nombre: 'Semestre enero',    inicio: '2027-01-04', fin: '2027-02-19', semana: 'enero',
+      horario: 'Pendiente: agrega tu horario de enero.', horarioEditable: true },
+  ],
+
+  // Tipos de sesión: criterio para elegir clase y qué buscar en Wellhub
+  tipos: {
+    pierna:     { nombre: 'Pierna',     buscar: ['Lower body', 'Leg day'], criterio: 'Tiene que usar pesas o barra. Las clases solo de cardio o "sculpt" con ligas no cuentan.' },
+    caminadora: { nombre: 'Caminadora', buscar: ['Tread', 'Running'],      criterio: 'El bootcamp debe tener caminadora real. Es la clase más importante de la semana: no la cambies por box.' },
+    upper:      { nombre: 'Upper',      buscar: ['Upper body', 'Espalda y brazos', 'Funcional', 'Cross'], criterio: 'Si no hay "upper body", sirve cualquier clase funcional o cross con remo o dominadas.' },
+    hyrox:      { nombre: 'HYROX',      buscar: ['HYROX'], criterio: 'Con tu compañero. Es donde se practican las estaciones.',
+                  extra: 'Extra de 10 min al terminar: 3 rondas de 15 wall balls cada uno + 2–3 jalones de sled. Son tus estaciones débiles.' },
+    trote:      { nombre: 'Trote',      buscar: [], criterio: 'Sin clase. Ritmo suave: tienes que poder platicar mientras corres.' },
+    descanso:   { nombre: 'Descanso',   buscar: [], criterio: 'Recuperar también es entrenar. Come bien y duerme tus 7–8 h.' },
+    carrera:    { nombre: 'Carrera',    buscar: [], criterio: '8 × 1 km + 8 estaciones. Ambos corren los 8 km; se reparten las estaciones.' },
+  },
+
+  // Semanas tipo (índice 0 = lunes … 6 = domingo)
+  semanas: {
+    actual: { nombre: 'Periodo 1', rango: '28 sep – 25 oct', dias: [
+      { tipo: 'pierna',     hora: '7:30–9:00', clase: 'Pierna con pesas', zona: 'Interlomas', nota: 'Lunes de checkpoint (5 y 19 oct): InBody antes de entrenar.' },
+      { tipo: 'descanso',   hora: '',          clase: 'Descanso', zona: '', nota: 'Opcional: 9Round.' },
+      { tipo: 'caminadora', hora: '~11:00',    clase: 'Caminadora / bootcamp con caminadora', zona: 'Santa Fe', nota: '' },
+      { tipo: 'upper',      hora: '~15:00',    clase: 'Upper body, espalda y brazos o funcional', zona: 'Interlomas', nota: '' },
+      { tipo: 'hyrox',      hora: '~15:00',    clase: 'Clase HYROX con tu compañero', zona: 'Samara', nota: '' },
+      { tipo: 'trote',      hora: 'Libre',     clase: 'Trote suave 45–60 min', zona: 'Donde estés', nota: '' },
+      { tipo: 'descanso',   hora: '',          clase: 'Descanso', zona: '', nota: '' },
+    ]},
+    semanatec: { nombre: 'Semana Tec', rango: '26 – 30 oct · semana ligera', dias: [
+      { tipo: 'pierna',     hora: '~15:00', clase: 'Pierna con pesas (más ligera)', zona: 'Interlomas', nota: '' },
+      { tipo: 'descanso',   hora: '',       clase: 'Descanso', zona: '', nota: '' },
+      { tipo: 'caminadora', hora: '~13:30', clase: 'Caminadora / bootcamp con caminadora', zona: 'Santa Fe', nota: '' },
+      { tipo: 'upper',      hora: '~15:00', clase: 'Upper body / funcional', zona: 'Interlomas', nota: '' },
+      { tipo: 'hyrox',      hora: '~13:30', clase: 'Clase HYROX con tu compañero', zona: 'Samara', nota: 'Si se puede: medio HYROX cronometrado (4 km + 4 estaciones).' },
+      { tipo: 'trote',      hora: 'Libre',  clase: 'Trote suave 30–40 min', zona: 'Donde estés', nota: '' },
+      { tipo: 'descanso',   hora: '',       clase: 'Descanso', zona: '', nota: '' },
+    ]},
+    ultimo: { nombre: 'Último periodo', rango: '2 nov – 13 dic', dias: [
+      { tipo: 'pierna',     hora: '~9:00',    clase: 'Pierna con pesas', zona: 'Interlomas', nota: 'Lunes de checkpoint (2, 16 y 30 nov): InBody antes de entrenar.' },
+      { tipo: 'descanso',   hora: '',         clase: 'Descanso', zona: '', nota: 'Opcional: 9Round.' },
+      { tipo: 'caminadora', hora: '~11:00',   clase: 'Caminadora / bootcamp con caminadora', zona: 'Santa Fe', nota: 'Te quedas en Santa Fe para tu clase de 17:00.' },
+      { tipo: 'hyrox',      hora: 'Flexible', clase: 'Clase HYROX con tu compañero', zona: 'Samara', nota: '' },
+      { tipo: 'upper',      hora: '~15:00',   clase: 'Upper body / funcional', zona: 'Santa Fe o Interlomas', nota: '' },
+      { tipo: 'trote',      hora: 'Libre',    clase: 'Trote suave 50–70 min', zona: 'Donde estés', nota: '' },
+      { tipo: 'descanso',   hora: '',         clase: 'Descanso', zona: '', nota: '' },
+    ]},
+    vacaciones: { nombre: 'Vacaciones', rango: '14 dic – 3 ene · 4 sesiones', dias: [
+      { tipo: 'pierna',     hora: 'Flexible', clase: 'Pierna con pesas', zona: 'Donde estés', nota: '' },
+      { tipo: 'descanso',   hora: '',         clase: 'Descanso', zona: '', nota: '' },
+      { tipo: 'caminadora', hora: 'Flexible', clase: 'Caminadora / bootcamp con caminadora', zona: 'Donde estés', nota: '' },
+      { tipo: 'descanso',   hora: '',         clase: 'Descanso', zona: '', nota: '' },
+      { tipo: 'hyrox',      hora: 'Flexible', clase: 'Clase HYROX o funcional', zona: 'Samara o donde estés', nota: '' },
+      { tipo: 'trote',      hora: 'Libre',    clase: 'Trote suave 45–60 min', zona: 'Donde estés', nota: '' },
+      { tipo: 'descanso',   hora: '',         clase: 'Descanso', zona: '', nota: '' },
+    ]},
+    enero: { nombre: 'Enero 2027', rango: '4 ene – 19 feb · editable', pendiente: true, dias: null }, // null = copia del último periodo
+  },
+
+  // Días con sesión fija (sobrescriben la semana tipo)
+  diasEspeciales: {
+    '2027-02-18': { tipo: 'descanso', hora: '', clase: 'Descanso / viaje a Cancún', zona: '', nota: 'Hidrátate, carbos en cada comida y duerme temprano.' },
+    '2027-02-19': { tipo: 'carrera', hora: 'Revisa tu wave', clase: 'HYROX Cancún · Doubles', zona: 'Malecón Tajamar', nota: 'Meta: sub 65 min. A disfrutarlo.' },
+  },
+
+  // Tests y sesiones clave (los "sugerido" se pueden mover)
+  tests: [
+    { fecha: '2026-09-30', tipo: '1km',       titulo: 'Test de 1 km', texto: 'En la caminadora: calienta 10 min y corre 1 km a tope. Anota tu tiempo.' },
+    { fecha: '2026-10-03', tipo: '5km',       titulo: 'Test de 5 km', texto: 'Hoy tu trote es el test: 5 km fuerte y parejo. Anota tu tiempo.' },
+    { fecha: '2026-10-30', tipo: 'medio',     titulo: 'Medio HYROX cronometrado', texto: '4 km + 4 estaciones con tu compañero, si la clase lo permite. Es tu referencia.' },
+    { fecha: '2026-11-12', tipo: null,        titulo: 'Prueba: 20 wall balls seguidos', texto: 'Al final de la clase HYROX intenta 20 wall balls sin parar (meta del 16 nov).' },
+    { fecha: '2026-11-28', tipo: '5km',       titulo: 'Repetir 5 km (sugerido)', texto: 'Meta: 1 min más rápido que tu test del 3 oct.' },
+    { fecha: '2026-12-09', tipo: '1km',       titulo: 'Repetir 1 km (sugerido)', texto: 'Meta: 15 s más rápido que tu test del 30 sep.' },
+    { fecha: '2026-12-10', tipo: null,        titulo: 'Prueba: sled pull 12.5 m sin parar', texto: 'En la clase HYROX: un jalón completo de 12.5 m sin soltar.' },
+    { fecha: '2027-01-23', tipo: 'simulacro', titulo: 'Simulacro Doubles (sugerido)', texto: 'Simulacro completo con tu compañero. Meta: menos de 70 min.' },
+    { fecha: '2027-02-06', tipo: 'simulacro', titulo: 'Sesión clave a ritmo sub 65 (sugerido)', texto: 'Simulacro o sesión clave al ritmo de carrera.' },
+  ],
+
+  tiposTest: {
+    '1km':       { nombre: '1 km',              mejora: 15, metaTxt: '15 s más rápido que el primero' },
+    '5km':       { nombre: '5 km',              mejora: 60, metaTxt: '1 min más rápido que el primero', ritmo: 5 },
+    'medio':     { nombre: 'Medio HYROX',       metaTxt: 'Referencia (4 km + 4 estaciones)' },
+    'simulacro': { nombre: 'Simulacro Doubles', objetivo: 70 * 60, metaTxt: 'Menos de 70 min' },
+    'carrera':   { nombre: 'Carrera oficial',   objetivo: 65 * 60, metaTxt: 'Sub 65 min' },
+  },
+
+  // Checkpoints InBody (lunes, cada 2 semanas)
+  checkpoints: [
+    { fecha: '2026-10-05', peso: 66.0, pct: 5,   meta: 'Tests de 1 km y 5 km hechos', base: true },
+    { fecha: '2026-10-19', peso: 66.6, pct: 19,  meta: '4 semanas sin faltar a ninguna clase' },
+    { fecha: '2026-11-02', peso: 67.2, pct: 33,  meta: 'Medio HYROX cronometrado en Semana Tec (referencia)' },
+    { fecha: '2026-11-16', peso: 67.8, pct: 48,  meta: '20 wall balls seguidos sin parar' },
+    { fecha: '2026-11-30', peso: 68.4, pct: 62,  meta: 'Repetir 5 km: 1 min más rápido que el test' },
+    { fecha: '2026-12-14', peso: 69.0, pct: 76,  meta: 'Repetir 1 km: 15 s más rápido · sled pull de 12.5 m sin parar' },
+    { fecha: '2027-01-11', peso: 70.0, pct: 100, meta: 'Llegar a enero sin perder lo ganado' },
+    { fecha: '2027-01-25', peso: 70.0, rango: [69.5, 70.5], mantener: true, meta: 'Simulacro completo Doubles en menos de 70 min' },
+    { fecha: '2027-02-08', peso: 69.75, rango: [69.5, 70.0], mantener: true, meta: 'Simulacro o sesión clave a ritmo sub 65' },
+  ],
+  toleranciaPeso: 0.3,     // ± kg para "en camino"
+  topeGrasaExtra: 1,       // línea base + 1 %
+  grasaIdealCarrera: [11, 13],
+  musculoMeta: 2.25,       // kg de músculo de los 4.2 kg (2–2.5)
+  protocoloInBody: 'Lunes temprano, en ayunas, después de ir al baño y antes de entrenar. Siempre en las mismas condiciones.',
+
+  reglas: {
+    base:     { tono: 'acc',  titulo: 'Línea base fijada', texto: 'De aquí a enero: +4.2 kg, idealmente 2–2.5 kg de músculo.' },
+    perfecto: { tono: 'ok',   titulo: 'Va perfecto', texto: 'Subiste de peso y la grasa no pasó el tope. Sigue igual.' },
+    extra:    { tono: 'warn', titulo: 'El peso no se movió', texto: 'Agrega una comida extra al día: licuado de avena, plátano y proteína.' },
+    cena:     { tono: 'bad',  titulo: 'La grasa subió más de 1%', texto: 'Baja un poco las porciones de la cena, sin quitar proteína.' },
+    rapido:   { tono: 'warn', titulo: 'Vas muy rápido', texto: 'Subiste más de 1 kg en 2 semanas: baja un poco la comida.' },
+    mantenOk: { tono: 'ok',   titulo: 'Peso en rango', texto: 'Ya llegaste: toca mantener. Sigue igual.' },
+    mantenBajo:{ tono: 'warn', titulo: 'Abajo del rango', texto: 'Estás perdiendo lo ganado: agrega el licuado de avena, plátano y proteína.' },
+    mantenAlto:{ tono: 'warn', titulo: 'Arriba del rango', texto: 'Estás arriba del rango de mantenimiento: baja un poco la comida.' },
+  },
+
+  habitos: [
+    { k: 'proteina', t: '~130 g de proteína', s: '30–40 g por comida' },
+    { k: 'agua',     t: '2.5–3 L de agua',    s: 'Lleva tu botella al Tec' },
+    { k: 'sueno',    t: 'Dormí 7–8 h',        s: 'La recuperación es entrenamiento' },
+    { k: 'creatina', t: 'Creatina 3–5 g',     s: 'Opcional', opcional: true },
+  ],
+  comidas: [
+    { t: 'Desayuno', s: '' },
+    { t: 'En el Tec', s: 'algo sólido' },
+    { t: 'Comida', s: 'nunca la saltes' },
+    { t: 'Cena', s: '' },
+  ],
+  notasComida: 'Carbohidratos (arroz, papa, pasta, tortilla, avena), sobre todo antes y después de entrenar.',
+};
+
+/* =====================================================================
+   STORAGE — única puerta a los datos. Etapa 2: cambiar `backend`
+   por @capacitor/preferences (init ya es async, el resto no cambia).
+   ===================================================================== */
+const storage = (() => {
+  const PREFIX = 'hyrox:';
+  let cache = {};
+  let ls = null;
+  try { ls = window.localStorage; ls.setItem(PREFIX + '__t', '1'); ls.removeItem(PREFIX + '__t'); } catch (e) { ls = null; }
+  const backend = {
+    async load() {
+      const out = {};
+      if (!ls) return out;
+      for (let i = 0; i < ls.length; i++) {
+        const k = ls.key(i);
+        if (k && k.startsWith(PREFIX)) { try { out[k.slice(PREFIX.length)] = JSON.parse(ls.getItem(k)); } catch (e) {} }
+      }
+      return out;
+    },
+    write(k, v) { if (!ls) return true; try { ls.setItem(PREFIX + k, JSON.stringify(v)); return true; } catch (e) { console.warn('No se pudo guardar', e); return false; } },
+    del(k) { if (ls) ls.removeItem(PREFIX + k); },
+  };
+  return {
+    async init() { cache = await backend.load(); },
+    get(k, def) { return k in cache ? cache[k] : def; },
+    set(k, v) { cache[k] = v; return backend.write(k, v); }, // false = sin espacio
+    remove(k) { delete cache[k]; backend.del(k); },
+    clear() { Object.keys(cache).forEach(k => backend.del(k)); cache = {}; },
+    exportAll() { return { app: 'hyrox-santiago', version: 1, exportado: new Date().toISOString(), datos: JSON.parse(JSON.stringify(cache)) }; },
+    importAll(obj) {
+      if (!obj || obj.app !== 'hyrox-santiago' || typeof obj.datos !== 'object') throw new Error('Este archivo no es un respaldo de la app.');
+      this.clear();
+      Object.entries(obj.datos).forEach(([k, v]) => this.set(k, v));
+    },
+    ready: () => !!ls,
+  };
+})();
+
+/* =====================================================================
+   FECHAS (todo en America/Mexico_City, claves YYYY-MM-DD)
+   ===================================================================== */
+const MESES = ['ene','feb','mar','abr','may','jun','jul','ago','sep','oct','nov','dic'];
+const MESES_L = ['enero','febrero','marzo','abril','mayo','junio','julio','agosto','septiembre','octubre','noviembre','diciembre'];
+const DIAS = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const DIAS_C = ['lun','mar','mié','jue','vie','sáb','dom'];
+const DIAS_1 = ['L','M','M','J','V','S','D'];
+
+const fechaDebug = (() => { const f = new URLSearchParams(location.search).get('fecha'); return /^\d{4}-\d{2}-\d{2}$/.test(f || '') ? f : null; })();
+function hoyReal() { return new Intl.DateTimeFormat('en-CA', { timeZone: CONFIG.zonaHoraria, year: 'numeric', month: '2-digit', day: '2-digit' }).format(new Date()); }
+function hoy() { return fechaDebug || hoyReal(); }
+const D = s => new Date(s + 'T12:00:00Z');
+const toISO = x => x.toISOString().slice(0, 10);
+function addDays(s, n) { const x = D(s); x.setUTCDate(x.getUTCDate() + n); return toISO(x); }
+function diff(a, b) { return Math.round((D(b) - D(a)) / 86400000); }
+function dow(s) { return (D(s).getUTCDay() + 6) % 7; }
+function lunesDe(s) { return addDays(s, -dow(s)); }
+function fCorta(s) { const x = D(s); return `${DIAS_C[dow(s)]} ${x.getUTCDate()} ${MESES[x.getUTCMonth()]}`; }
+function fDia(s) { const x = D(s); return `${x.getUTCDate()} ${MESES[x.getUTCMonth()]}`; }
+function fLarga(s) { const x = D(s); return `${DIAS[dow(s)].toLowerCase()} ${x.getUTCDate()} de ${MESES_L[x.getUTCMonth()]}`; }
+
+/* =====================================================================
+   MOTOR DEL PLAN
+   ===================================================================== */
+const clone = o => JSON.parse(JSON.stringify(o));
+const faseDe = s => CONFIG.fases.find(f => s >= f.inicio && s <= f.fin) || null;
+const periodoDe = s => CONFIG.periodos.find(p => s >= p.inicio && s <= p.fin) || null;
+
+function semanaTipo(id) {
+  const ed = storage.get('semanas', {});
+  if (ed[id]) return ed[id];
+  const base = CONFIG.semanas[id];
+  return base.dias || CONFIG.semanas.ultimo.dias;
+}
+function semanaEditada(id) { return !!storage.get('semanas', {})[id]; }
+function puedeIntercambiar(lunes) {
+  const p = periodoDe(lunes); if (!p) return false;
+  const dias = semanaTipo(p.semana);
+  const t = [dias[3].tipo, dias[4].tipo];
+  return t.includes('hyrox') && t.includes('upper');
+}
+function sesionDe(s) {
+  if (s < CONFIG.inicio) return { tipo: 'antes' };
+  if (s > CONFIG.carrera.fecha) return { tipo: 'fin' };
+  const p = periodoDe(s);
+  let i = dow(s);
+  if (storage.get('swaps', {})[lunesDe(s)] && (i === 3 || i === 4) && puedeIntercambiar(lunesDe(s))) i = i === 3 ? 4 : 3;
+  let ses = { ...semanaTipo(p.semana)[i] };
+  if (CONFIG.diasEspeciales[s]) ses = { ...ses, ...CONFIG.diasEspeciales[s] };
+  ses.periodo = p; ses.fase = faseDe(s);
+  return ses;
+}
+const esSesion = ses => ses && !['descanso', 'fin', 'antes'].includes(ses.tipo);
+function metaSemana(lunes) {
+  let n = 0;
+  for (let i = 0; i < 7; i++) if (esSesion(sesionDe(addDays(lunes, i)))) n++;
+  return n;
+}
+const totalSemanas = () => diff(CONFIG.inicio, lunesDe(CONFIG.carrera.fecha)) / 7 + 1;
+
+/* ---------- Registro diario ---------- */
+function diaVacio() { return { clase: null, comidas: [false, false, false, false], proteina: false, agua: false, sueno: false, creatina: false }; }
+function diaLog(s) { const d = storage.get('dias', {})[s]; return d ? { ...diaVacio(), ...d } : diaVacio(); }
+function setDia(s, patch) { const dias = storage.get('dias', {}); dias[s] = { ...diaLog(s), ...patch }; storage.set('dias', dias); }
+const habitosOk = l => !!(l.proteina && l.comidas.every(Boolean));
+const habitosCore = l => (l.comidas.every(Boolean) ? 1 : 0) + (l.proteina ? 1 : 0) + (l.agua ? 1 : 0) + (l.sueno ? 1 : 0);
+const algunHabito = l => l.comidas.some(Boolean) || l.proteina || l.agua || l.sueno;
+
+/* ---------- Rachas ---------- */
+function rachaSemanal() {
+  const H = hoy(), dias = storage.get('dias', {});
+  const semanas = [];
+  for (let l = lunesDe(CONFIG.inicio); l <= H && l <= CONFIG.carrera.fecha; l = addDays(l, 7)) {
+    let hechas = 0;
+    for (let i = 0; i < 7; i++) { const x = addDays(l, i); if (dias[x] && dias[x].clase === 'hecha') hechas++; }
+    const meta = metaSemana(l);
+    semanas.push({ lunes: l, meta, hechas, ok: hechas >= meta, actual: l === lunesDe(H) });
+  }
+  let actual = 0;
+  for (let i = semanas.length - 1; i >= 0; i--) { const w = semanas[i]; if (w.actual && !w.ok) continue; if (w.ok) actual++; else break; }
+  let mejor = 0, run = 0;
+  semanas.forEach(w => { if (w.ok) { run++; mejor = Math.max(mejor, run); } else if (!w.actual) run = 0; });
+  return { actual, mejor, semanas };
+}
+function rachaDiaria() {
+  const H = hoy(), dias = storage.get('dias', {});
+  const keys = Object.keys(dias).sort();
+  let desde = CONFIG.inicio; if (keys.length && keys[0] < desde) desde = keys[0];
+  let mejor = 0, run = 0;
+  for (let x = desde; x <= H; x = addDays(x, 1)) {
+    if (dias[x] && habitosOk({ ...diaVacio(), ...dias[x] })) { run++; mejor = Math.max(mejor, run); }
+    else if (x !== H) run = 0;
+  }
+  let actual = 0;
+  for (let x = H; x >= desde; x = addDays(x, -1)) {
+    const ok = dias[x] && habitosOk({ ...diaVacio(), ...dias[x] });
+    if (ok) actual++; else if (x === H) continue; else break;
+  }
+  return { actual, mejor };
+}
+
+/* ---------- InBody / checkpoints ---------- */
+const inbodyAll = () => storage.get('inbody', {});
+function lineaBase() {
+  const ib = inbodyAll();
+  const cp0 = CONFIG.checkpoints[0].fecha;
+  if (ib[cp0]) return { cp: cp0, ...ib[cp0] };
+  const k = Object.keys(ib).sort()[0];
+  return k ? { cp: k, ...ib[k] } : null;
+}
+const topeGrasa = () => { const b = lineaBase(); return b ? +(b.grasa + CONFIG.topeGrasaExtra).toFixed(1) : null; };
+function estadoPeso(cp, peso) {
+  const [lo, hi] = cp.rango || [cp.peso - CONFIG.toleranciaPeso, cp.peso + CONFIG.toleranciaPeso];
+  if (peso < lo - 1e-9) return { cls: 'b-warn', txt: 'Por debajo' };
+  if (peso > hi + 1e-9) return { cls: 'b-warn', txt: 'Por arriba' };
+  return { cls: 'b-ok', txt: 'En camino' };
+}
+function recomendaciones(cpFecha) {
+  const ib = inbodyAll(), actual = ib[cpFecha]; if (!actual) return [];
+  const base = lineaBase(), R = CONFIG.reglas, cp = CONFIG.checkpoints.find(c => c.fecha === cpFecha);
+  if (base && base.cp === cpFecha) return [{ ...R.base, texto: `Tu tope de grasa en cada checkpoint: ${topeGrasa()}%. ${R.base.texto}` }];
+  const out = [];
+  const grasaAlta = base && actual.grasa > base.grasa + CONFIG.topeGrasaExtra + 1e-9;
+  if (cp && cp.mantener) {
+    if (actual.peso > cp.rango[1] + 1e-9) out.push(R.mantenAlto);
+    else if (actual.peso < cp.rango[0] - 1e-9) out.push(R.mantenBajo);
+  } else {
+    const prevK = Object.keys(ib).filter(k => k < cpFecha).sort().pop();
+    if (prevK) {
+      const prev = ib[prevK];
+      const dias = Math.max(diff(prev.fecha || prevK, actual.fecha || cpFecha), 1);
+      const delta = actual.peso - prev.peso;
+      if (delta * 14 / dias > 1.0 + 1e-9) out.push({ ...R.rapido, texto: `+${delta.toFixed(1)} kg desde el último InBody. ${R.rapido.texto}` });
+      else if (delta < 0.2) out.push({ ...R.extra, texto: `${delta >= 0 ? '+' : ''}${delta.toFixed(1)} kg desde el último InBody. ${R.extra.texto}` });
+    }
+  }
+  if (grasaAlta) out.push({ ...R.cena, texto: `${actual.grasa}% vs tope de ${topeGrasa()}%. ${R.cena.texto}` });
+  if (!out.length) out.push(cp && cp.mantener ? R.mantenOk : R.perfecto);
+  return out;
+}
+
+/* ---------- Tests ---------- */
+function parseTiempo(t) {
+  t = String(t || '').trim(); if (!t) return null;
+  const p = t.split(':').map(Number);
+  if (p.some(n => isNaN(n) || n < 0)) return null;
+  if (p.length === 1) return Math.round(p[0] * 60);
+  if (p.length === 2) return p[0] * 60 + p[1];
+  if (p.length === 3) return p[0] * 3600 + p[1] * 60 + p[2];
+  return null;
+}
+function fTiempo(seg) {
+  seg = Math.round(Math.abs(seg));
+  const h = Math.floor(seg / 3600), m = Math.floor(seg % 3600 / 60), s = seg % 60;
+  return h ? `${h}:${String(m).padStart(2, '0')}:${String(s).padStart(2, '0')}` : `${m}:${String(s).padStart(2, '0')}`;
+}
+const testsAll = () => storage.get('tests', []).slice().sort((a, b) => a.fecha.localeCompare(b.fecha));
+const testsDe = tipo => testsAll().filter(t => t.tipo === tipo);
+
+/* ---------- Avisos del día ---------- */
+function avisosDe(f, esHoy) {
+  const out = [];
+  const cp = CONFIG.checkpoints.find(c => c.fecha === f);
+  const idx = CONFIG.checkpoints.indexOf(cp);
+  if (cp) {
+    const hecho = !!inbodyAll()[cp.fecha];
+    out.push({ tono: 'acc', ic: 'IB', titulo: `Checkpoint ${idx + 1}: toca InBody`, texto: `${CONFIG.protocoloInBody} Meta: ${cp.peso} kg.`,
+      btn: hecho ? null : { label: 'Capturar InBody', action: 'inbody', data: cp.fecha } });
+  }
+  const cpMañana = CONFIG.checkpoints.find(c => c.fecha === addDays(f, 1));
+  if (cpMañana) out.push({ tono: 'info', ic: 'IB', titulo: 'Mañana es checkpoint', texto: 'InBody temprano, en ayunas y antes de entrenar. Cena normal hoy.' });
+  CONFIG.tests.filter(t => t.fecha === f).forEach(t => out.push({ tono: 'acc', ic: 'T', titulo: t.titulo, texto: t.texto,
+    btn: t.tipo ? { label: 'Registrar tiempo', action: 'test', data: t.tipo } : null }));
+  if (f === CONFIG.carrera.fecha) out.push({ tono: 'acc', ic: '!', titulo: '¡Hoy es la carrera!', texto: `${CONFIG.carrera.lugar}. ${CONFIG.carrera.meta}.`, btn: { label: 'Registrar tiempo oficial', action: 'test', data: 'carrera' } });
+  const fase = faseDe(f);
+  if (fase && fase.inicio === f && fase.n > 1) out.push({ tono: 'info', ic: String(fase.n), titulo: `Arranca la fase ${fase.n}: ${fase.nombre}`, texto: fase.objetivo });
+  const per = periodoDe(f);
+  if (per && per.inicio === f && per.id !== 'p1') out.push({ tono: 'info', ic: '◷', titulo: `Nuevo periodo: ${per.nombre}`, texto: 'Cambia tu semana tipo. Revisa las horas antes de reservar.' });
+  if (esHoy) {
+    if (per && per.semana === 'enero' && !semanaEditada('enero'))
+      out.push({ tono: 'warn', ic: '!', titulo: 'Tu semana de enero está pendiente', texto: 'Uso la del último periodo mientras tanto. Ajústala a tu horario nuevo.', btn: { label: 'Editar semana', action: 'editar-semana', data: 'enero' } });
+    if (f > '2026-09-30' && !testsDe('1km').length) out.push({ tono: 'warn', ic: '!', titulo: 'Falta tu tiempo de 1 km', texto: 'Con él se ajustan tus ritmos.', btn: { label: 'Registrar', action: 'test', data: '1km' } });
+    if (f > '2026-10-03' && !testsDe('5km').length) out.push({ tono: 'warn', ic: '!', titulo: 'Falta tu tiempo de 5 km', texto: 'Con él se ajustan tus ritmos.', btn: { label: 'Registrar', action: 'test', data: '5km' } });
+    if (f > CONFIG.checkpoints[0].fecha && !lineaBase()) out.push({ tono: 'warn', ic: '!', titulo: 'Falta tu primer InBody', texto: 'Es tu línea base: sin él no hay topes de grasa.', btn: { label: 'Capturar', action: 'inbody', data: CONFIG.checkpoints[0].fecha } });
+  }
+  return out;
+}
+
+/* =====================================================================
+   UI
+   ===================================================================== */
+const state = { tab: 'hoy', fecha: null, heat: 'clases', plan: null };
+const $ = s => document.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const I = {
+  check: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>',
+  pin: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M12 21s-6.5-6-6.5-11a6.5 6.5 0 0 1 13 0c0 5-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg>',
+  clock: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><circle cx="12" cy="12" r="8.5"/><path d="M12 7.5V12l3 2"/></svg>',
+};
+const TABS = [
+  { id: 'hoy', t: 'Hoy', icon: '<circle cx="12" cy="12" r="8.5"/><circle cx="12" cy="12" r="3.2"/>' },
+  { id: 'rachas', t: 'Rachas', icon: '<path d="M12 3c1 3.5 5.2 5.6 5.2 10.2a5.2 5.2 0 0 1-10.4 0c0-2.3 1-3.8 2.3-5 .3 1.7 1.2 2.7 2.4 2.9C11 8.6 11.2 5.6 12 3z"/>' },
+  { id: 'checkpoints', t: 'Checkpoints', icon: '<path d="M5.5 21V4"/><path d="M5.5 4.5h11l-2.2 4 2.2 4h-11"/>' },
+  { id: 'progreso', t: 'Progreso', icon: '<path d="M4 19.5h16"/><path d="M5 15l4-5 4 3 6-7"/>' },
+  { id: 'plan', t: 'Plan', icon: '<rect x="3.5" y="5" width="17" height="15" rx="3"/><path d="M3.5 10h17M8 3v4M16 3v4"/>' },
+];
+const colorTipo = t => `var(--t-${t in CONFIG.tipos ? t : 'descanso'})`;
+
+function toast(msg) {
+  const t = $('#toast'); t.textContent = msg; t.classList.add('show');
+  clearTimeout(toast._t); toast._t = setTimeout(() => t.classList.remove('show'), 1900);
+}
+
+function renderTabs() {
+  $('#tabs').innerHTML = TABS.map(t => `<button class="tab ${state.tab === t.id ? 'on' : ''}" data-action="tab" data-v="${t.id}" aria-label="${t.t}">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${t.icon}</svg>${t.t}<i class="pip"></i></button>`).join('');
+}
+
+function render() {
+  const H = hoy();
+  const views = { hoy: vistaHoy, rachas: vistaRachas, checkpoints: vistaCheckpoints, progreso: vistaProgreso, plan: vistaPlan };
+  const titulos = { hoy: 'Hoy', rachas: 'Rachas', checkpoints: 'Checkpoints', progreso: 'Progreso', plan: 'Plan' };
+  $('#titulo').textContent = titulos[state.tab];
+  $('#kicker').textContent = state.tab === 'hoy' ? fLarga(H) : 'HYROX Cancún 2027';
+  $('#view').innerHTML = views[state.tab]();
+  renderTabs();
+}
+
+/* ---------- HOY ---------- */
+function vistaHoy() {
+  const H = hoy(), f = state.fecha || H, esHoy = f === H;
+  const faltan = diff(H, CONFIG.carrera.fecha);
+  const faseH = faseDe(H), perH = periodoDe(H);
+  const progreso = Math.max(0, Math.min(100, diff(CONFIG.inicio, H) / diff(CONFIG.inicio, CONFIG.carrera.fecha) * 100));
+  const semN = H < CONFIG.inicio ? 0 : Math.min(totalSemanas(), Math.floor(diff(CONFIG.inicio, H) / 7) + 1);
+
+  let hero;
+  if (faltan > 0) hero = `<div class="big num">${faltan}</div><div class="lbl">${faltan === 1 ? 'día' : 'días'} para Cancún · ${CONFIG.carrera.categoria} · ${CONFIG.carrera.meta.toLowerCase()}</div>`;
+  else if (faltan === 0) hero = `<div class="big">Hoy.</div><div class="lbl">HYROX Cancún · ${CONFIG.carrera.meta}</div>`;
+  else hero = `<div class="big">Listo.</div><div class="lbl">Corriste HYROX Cancún 2027</div>`;
+
+  let html = `<section class="hero"><i class="stripe"></i>${hero}
+    <div class="row wrap" style="margin-top:14px;gap:6px">
+      ${faseH ? `<span class="chip accent">Fase ${faseH.n} · ${faseH.nombre}</span>` : H < CONFIG.inicio ? '<span class="chip accent">Arranca el lun 28 sep</span>' : ''}
+      ${perH ? `<span class="chip">${esc(perH.nombre)}</span>` : ''}
+    </div>
+    <div class="bar"><i style="width:${progreso}%"></i></div>
+    <div class="lbl xs" style="margin-top:6px">${semN ? `Semana ${semN} de ${totalSemanas()}` : 'Semana 0: mañana empieza'}</div>
+  </section>`;
+
+  if (!esHoy) html += `<div class="alert info"><div class="ic">◷</div><div class="grow"><b>Viendo ${fLarga(f)}</b><p>${f < H ? 'Puedes corregir lo que registraste ese día.' : 'Es un día que aún no llega: sirve para reservar.'}</p></div><button class="btn sm" data-action="ver-hoy">Hoy</button></div>`;
+
+  avisosDe(f, esHoy).forEach(a => {
+    html += `<div class="alert ${a.tono}"><div class="ic">${esc(a.ic)}</div><div class="grow"><b>${esc(a.titulo)}</b><p>${esc(a.texto)}</p>
+      ${a.btn ? `<button class="btn sm primary" data-action="${a.btn.action}" data-v="${esc(a.btn.data)}">${esc(a.btn.label)}</button>` : ''}</div></div>`;
+  });
+
+  html += semanaStrip(f, H);
+  html += tarjetaSesion(f, H);
+
+  if (esHoy) {
+    const m = addDays(H, 1), sm = sesionDe(m);
+    if (esSesion(sm)) html += `<div class="tomorrow"><span class="chip" style="height:24px"><i class="dot" style="background:${colorTipo(sm.tipo)}"></i>Mañana</span>
+      <div class="grow"><b>${esc(sm.clase)}</b><div class="muted xs">${esc([sm.hora, sm.zona].filter(Boolean).join(' · '))}${CONFIG.tipos[sm.tipo].buscar.length ? ' · resérvala en Wellhub' : ''}</div></div></div>`;
+  }
+
+  html += tarjetaHabitos(f, H);
+  return html;
+}
+
+function semanaStrip(f, H) {
+  const l = lunesDe(f), dias = storage.get('dias', {});
+  let hechas = 0; const meta = metaSemana(l);
+  let cells = '';
+  for (let i = 0; i < 7; i++) {
+    const x = addDays(l, i), ses = sesionDe(x), c = dias[x] && dias[x].clase;
+    if (c === 'hecha') hechas++;
+    let st = 'rest';
+    if (ses.tipo === 'carrera') st = 'race';
+    else if (c === 'hecha') st = 'hecha';
+    else if (c === 'nofui') st = 'nofui';
+    else if (esSesion(ses)) st = 'pend';
+    cells += `<button class="day ${x === f ? 'sel' : ''} ${x === H ? 'today' : ''}" data-action="ver-dia" data-v="${x}" aria-label="${fLarga(x)}">
+      ${DIAS_1[i]}<span class="n num">${D(x).getUTCDate()}</span><i class="st ${st}"></i></button>`;
+  }
+  const txtMeta = l > CONFIG.carrera.fecha || addDays(l, 6) < CONFIG.inicio ? '' : `<span class="badge ${hechas >= meta ? 'b-acc' : 'b-mute'} num">${hechas}/${meta} clases</span>`;
+  return `<div class="card" style="padding:12px 10px">
+    <div class="row between" style="padding:0 8px 8px"><b class="small">Semana del ${fDia(l)}</b>${txtMeta}</div>
+    <div class="week"><button class="nav" data-action="semana" data-v="-7" aria-label="Semana anterior">‹</button>${cells}<button class="nav" data-action="semana" data-v="7" aria-label="Semana siguiente">›</button></div>
+  </div>`;
+}
+
+function tarjetaSesion(f, H) {
+  const ses = sesionDe(f), log = diaLog(f), futuro = f > H;
+  const tipo = CONFIG.tipos[ses.tipo];
+  if (ses.tipo === 'antes') {
+    const s1 = sesionDe(CONFIG.inicio);
+    return `<div class="card ses"><div class="kick"><i class="dot" style="background:var(--accent)"></i>Antes de arrancar</div>
+      <h3>El plan empieza el lunes 28 sep</h3>
+      <div class="box"><b>Primera clase</b>${esc(s1.clase)} · ${esc(s1.hora)} · ${esc(s1.zona)}. Resérvala hoy en Wellhub.</div>
+      <div class="box"><b>Esta semana</b>Mié 30 sep: test de 1 km · Sáb 3 oct: test de 5 km · Lun 5 oct: primer InBody.</div></div>`;
+  }
+  if (ses.tipo === 'fin') {
+    const c = testsDe('carrera').pop();
+    return `<div class="card ses"><div class="kick">Plan terminado</div><h3>${c ? `Tu tiempo: ${fTiempo(c.seg)}` : 'Lo lograste'}</h3>
+      <p class="muted small" style="margin:0">20 semanas de trabajo. ${c ? (c.seg < 65 * 60 ? 'Sub 65: meta cumplida.' : 'Revisa qué estaciones te costaron y ve por la siguiente.') : 'Registra tu tiempo oficial en Progreso.'}</p>
+      ${c ? '' : '<div class="acts" style="grid-template-columns:1fr"><button class="btn primary" data-action="test" data-v="carrera">Registrar tiempo oficial</button></div>'}</div>`;
+  }
+  const faseNota = ses.fase && ses.fase.nota && esSesion(ses) && ses.tipo !== 'carrera' ? ses.fase.nota : '';
+  const kick = `<div class="kick"><i class="dot" style="background:${colorTipo(ses.tipo)}"></i>${DIAS[dow(f)]}${f === H ? ' · hoy' : ''} · ${esc(tipo.nombre)}</div>`;
+
+  if (ses.tipo === 'descanso') {
+    return `<div class="card ses">${kick}<h3>${esc(ses.clase)}</h3>
+      <p class="muted small" style="margin:0 0 4px">${esc(tipo.criterio)}</p>
+      ${ses.nota ? `<div class="box" style="margin-top:10px">${esc(ses.nota)}</div>` : ''}
+      ${log.clase === 'hecha'
+        ? `<div class="done-banner">${I.check}<span>Sesión extra registrada</span><button data-action="clase" data-v="hecha">Deshacer</button></div>`
+        : futuro ? '' : `<div class="acts" style="grid-template-columns:1fr"><button class="btn ghost sm" data-action="clase" data-v="hecha">Entrené de todos modos</button></div>`}
+    </div>`;
+  }
+
+  const swapPosible = (dow(f) === 3 || dow(f) === 4) && puedeIntercambiar(lunesDe(f));
+  const swapped = !!storage.get('swaps', {})[lunesDe(f)];
+  let body = `<div class="meta">
+      ${ses.hora ? `<span class="chip">${I.clock}${esc(ses.hora)}</span>` : ''}
+      ${ses.zona ? `<span class="chip">${I.pin}${esc(ses.zona)}</span>` : ''}
+    </div>`;
+  if (tipo.buscar.length) body += `<div class="box"><b>Busca en Wellhub</b><div class="tags">${tipo.buscar.map(b => `<span class="tag">${esc(b)}</span>`).join('')}</div></div>`;
+  body += `<div class="box"><b>${ses.tipo === 'carrera' ? 'Formato' : 'Cómo elegirla'}</b>${esc(tipo.criterio)}</div>`;
+  if (tipo.extra) body += `<div class="box"><b>Extra · 10 min</b>${esc(tipo.extra)}</div>`;
+  if (ses.nota) body += `<div class="box"><b>Ojo</b>${esc(ses.nota)}</div>`;
+  if (faseNota) body += `<div class="box"><b>Fase ${ses.fase.n}</b>${esc(faseNota)}</div>`;
+  if (swapPosible) body += `<button class="link" data-action="swap">${swapped ? '↺ Regresar HYROX a su día normal' : '¿La clase HYROX cambió de día? Intercambiar jue ↔ vie'}</button>`;
+
+  let acts;
+  if (futuro) acts = `<div class="acts" style="grid-template-columns:1fr"><button class="btn ghost" disabled>Aún no llega este día</button></div>`;
+  else if (log.clase === 'hecha') acts = `<div class="done-banner">${I.check}<span>${ses.tipo === 'carrera' ? '¡Carrera terminada!' : '¡Hecha! Una menos.'}</span><button data-action="clase" data-v="hecha">Deshacer</button></div>`;
+  else if (log.clase === 'nofui') acts = `<div class="done-banner miss"><span>No fuiste. Pasa, mañana le sigues.</span><button data-action="clase" data-v="nofui">Deshacer</button></div>`;
+  else acts = `<div class="acts"><button class="btn primary" data-action="clase" data-v="hecha">${I.check} ${ses.tipo === 'carrera' ? 'Terminé la carrera' : 'La hice'}</button><button class="btn" data-action="clase" data-v="nofui">No fui</button></div>`;
+
+  return `<div class="card ses">${kick}<h3>${esc(ses.clase)}</h3>${body}${acts}</div>`;
+}
+
+function tarjetaHabitos(f, H) {
+  const log = diaLog(f), futuro = f > H, n = habitosCore(log), rd = rachaDiaria();
+  const dis = futuro ? 'disabled' : '';
+  const meals = CONFIG.comidas.map((c, i) => `<button class="meal ${log.comidas[i] ? 'on' : ''}" data-action="comida" data-v="${i}" ${dis}>${esc(c.t)}${c.s ? `<span class="xs" style="font-weight:500;opacity:.75">${esc(c.s)}</span>` : ''}</button>`).join('');
+  const habs = CONFIG.habitos.map(h => `<button class="hab ${log[h.k] ? 'on' : ''}" data-action="habito" data-v="${h.k}" ${dis}>
+      <span class="chk">${I.check}</span><span class="grow"><span class="t">${esc(h.t)}</span><br><span class="s">${esc(h.s)}</span></span></button>`).join('');
+  return `<div class="card">
+    <div class="row between" style="margin-bottom:10px">
+      <div><h2 style="margin:0">Hábitos ${f === H ? 'de hoy' : 'del día'}</h2><div class="muted xs">${rd.actual ? `Racha: ${rd.actual} ${rd.actual === 1 ? 'día' : 'días'} con proteína + 4 comidas` : 'Proteína + 4 comidas = día de racha'}</div></div>
+      <div class="ring" style="--p:${n / 4 * 100}"><span class="num">${n}/4</span></div>
+    </div>
+    <div class="small" style="font-weight:650">4 comidas <span class="muted">· ${log.comidas.filter(Boolean).length}/4</span></div>
+    <div class="meals">${meals}</div>
+    ${habs}
+    <p class="muted xs" style="margin:8px 0 0">${esc(CONFIG.notasComida)}</p>
+  </div>`;
+}
+
+/* ---------- RACHAS ---------- */
+function vistaRachas() {
+  const rs = rachaSemanal(), rd = rachaDiaria();
+  const animo = (r, u) => r.actual === 0 && r.mejor > 0 ? `Tu mejor fue ${r.mejor} ${u}. Hoy empiezas otra.` : r.actual > 0 && r.actual >= r.mejor ? '¡Es tu mejor racha!' : `Mejor: ${r.mejor} ${u}`;
+  let html = `<div class="stats">
+    <div class="stat"><div class="l">Entrenamiento</div><div class="v num">${rs.actual}</div><div class="u">${rs.actual === 1 ? 'semana completa' : 'semanas completas'}</div><div class="best">${animo(rs, rs.mejor === 1 ? 'semana' : 'semanas')}</div></div>
+    <div class="stat"><div class="l">Hábitos</div><div class="v num">${rd.actual}</div><div class="u">${rd.actual === 1 ? 'día' : 'días'} seguidos</div><div class="best">${animo(rd, rd.mejor === 1 ? 'día' : 'días')}</div></div>
+  </div>`;
+
+  html += `<div class="card"><div class="seg"><button class="${state.heat === 'clases' ? 'on' : ''}" data-action="heat" data-v="clases">Clases</button><button class="${state.heat === 'habitos' ? 'on' : ''}" data-action="heat" data-v="habitos">Hábitos</button></div>${heatmap()}</div>`;
+
+  const ult = rs.semanas.slice(-6).reverse();
+  html += `<div class="card"><h2>Semanas <small>meta del plan</small></h2>${ult.length ? ult.map(w => `<div class="wk"><span class="${w.actual ? '' : 'muted'}">${w.actual ? 'Esta semana' : 'Sem. ' + fDia(w.lunes)}</span>
+    <div class="pbar"><i style="width:${Math.min(100, w.hechas / w.meta * 100)}%"></i></div><b class="num" style="text-align:right">${w.hechas}/${w.meta}</b></div>`).join('')
+    : '<div class="empty">Tu primera semana arranca el lunes 28 sep.</div>'}
+    <p class="muted xs" style="margin:10px 0 0">Una semana cuenta cuando cumples todas sus clases (5 normalmente, 4 en vacaciones). Si una se rompe, no pasa nada: la mejor racha se queda guardada.</p></div>`;
+  return html;
+}
+
+function heatmap() {
+  const H = hoy(), dias = storage.get('dias', {});
+  const l0 = lunesDe(CONFIG.inicio), nW = totalSemanas();
+  let cells = '<span></span>';
+  let prevMes = -1;
+  for (let w = 0; w < nW; w++) {
+    const m = D(addDays(l0, w * 7 + 3)).getUTCMonth();
+    cells += `<span class="hl">${m !== prevMes ? MESES[m] : ''}</span>`; prevMes = m;
+  }
+  for (let r = 0; r < 7; r++) {
+    cells += `<span class="hl">${r % 2 === 0 ? DIAS_1[r] : ''}</span>`;
+    for (let w = 0; w < nW; w++) {
+      const x = addDays(l0, w * 7 + r), ses = sesionDe(x), lg = dias[x] ? { ...diaVacio(), ...dias[x] } : null;
+      let cls = '';
+      if (x > CONFIG.carrera.fecha) cls = 'rest fut';
+      else if (ses.tipo === 'carrera') cls = 'race';
+      else if (state.heat === 'clases') {
+        if (lg && lg.clase === 'hecha') cls = 'l2';
+        else if (!esSesion(ses)) cls = 'rest';
+        else if (lg && lg.clase === 'nofui') cls = 'miss';
+      } else {
+        if (lg && habitosOk(lg)) cls = 'l2';
+        else if (lg && algunHabito(lg)) cls = 'l1';
+      }
+      if (x > H && ses.tipo !== 'carrera') cls += ' fut';
+      if (x === H) cls += ' today';
+      cells += `<i class="hc ${cls}" title="${fCorta(x)}"></i>`;
+    }
+  }
+  const leg = state.heat === 'clases'
+    ? '<span><i style="background:var(--heat2)"></i>Hecha</span><span><i style="box-shadow:inset 0 0 0 1.5px var(--faint)"></i>No fui</span><span><i style="background:var(--heat0)"></i>Pendiente</span><span><i style="box-shadow:inset 0 0 0 1px var(--line)"></i>Descanso</span><span><i style="background:var(--text)"></i>Carrera</span>'
+    : '<span><i style="background:var(--heat2)"></i>Proteína + 4 comidas</span><span><i style="background:var(--heat1)"></i>Parcial</span><span><i style="background:var(--heat0)"></i>Nada</span>';
+  return `<div class="heat" style="grid-template-columns:12px repeat(${nW},minmax(0,1fr))">${cells}</div><div class="legend">${leg}</div>`;
+}
+
+/* ---------- CHECKPOINTS ---------- */
+function vistaCheckpoints() {
+  const H = hoy(), ib = inbodyAll(), base = lineaBase(), tope = topeGrasa(), metas = storage.get('metas', {});
+  const next = CONFIG.checkpoints.find(c => c.fecha >= H);
+  let html = '';
+  if (base) {
+    const ultimo = ib[Object.keys(ib).sort().pop()];
+    const pctMeta = Math.max(0, (ultimo.peso - CONFIG.atleta.pesoInicial) / (CONFIG.atleta.pesoMeta - CONFIG.atleta.pesoInicial) * 100);
+    html += `<div class="card"><h2>Línea base <small>${fCorta(base.fecha || base.cp)}</small></h2>
+      <div class="kv" style="margin-top:0"><div><small>Peso</small><strong class="num">${base.peso}</strong> kg</div><div><small>Grasa</small><strong class="num">${base.grasa}</strong>%</div><div><small>Tope grasa</small><strong class="num">${tope}</strong>%</div>
+      <div><small>Músculo</small><strong class="num">${base.musculo ?? '—'}</strong> kg</div><div><small>Visceral</small><strong class="num">${base.visceral ?? '—'}</strong></div><div><small>Avance</small><strong class="num">${Math.round(pctMeta)}</strong>%</div></div>
+      <p class="muted xs" style="margin:10px 0 0">Día de la carrera: grasa ideal ${CONFIG.grasaIdealCarrera.join('–')}%. De los 4.2 kg, idealmente ${CONFIG.musculoMeta - 0.25}–${CONFIG.musculoMeta + 0.25} kg de músculo.</p></div>`;
+  } else {
+    html += `<div class="alert acc"><div class="ic">IB</div><div class="grow"><b>Tu primer InBody fija la línea base</b><p>El lunes 5 oct. Con tu % de grasa de ese día se calcula el tope de cada checkpoint (base + 1%).</p></div></div>`;
+  }
+  html += `<div class="card"><div class="upload"><div class="ic-big">PDF</div><div class="grow"><b>Sube tu InBody</b>
+      <div class="muted xs">El PDF (o una foto de la hoja). Lo leo aquí mismo, sin internet, y tú confirmas los números.</div></div></div>
+      <div style="margin-top:12px">${botonSubir(null, 'Subir archivo').replace('class="btn block"', 'class="btn primary block"')}</div></div>`;
+  html += `<div class="alert info"><div class="ic">i</div><div class="grow"><b>Protocolo InBody</b><p>${esc(CONFIG.protocoloInBody)}</p></div></div>`;
+
+  CONFIG.checkpoints.forEach((cp, i) => {
+    const r = ib[cp.fecha], isNext = next && next.fecha === cp.fecha;
+    let badge;
+    if (r) badge = '<span class="badge b-acc">Capturado</span>';
+    else if (cp.fecha === H) badge = '<span class="badge b-acc">Hoy</span>';
+    else if (cp.fecha < H) badge = '<span class="badge b-warn">Falta capturar</span>';
+    else badge = `<span class="badge b-mute">${isNext ? `En ${diff(H, cp.fecha)} días` : 'Pendiente'}</span>`;
+    const pesoMeta = cp.rango ? `${cp.rango[0]}–${cp.rango[1]}` : cp.peso.toFixed(1);
+    let kv;
+    if (r) {
+      const ep = estadoPeso(cp, r.peso);
+      const eg = tope != null ? (r.grasa <= tope + 1e-9 ? { cls: 'b-ok', txt: 'Bajo el tope' } : { cls: 'b-bad', txt: 'Arriba del tope' }) : null;
+      kv = `<div class="kv"><div><small>Peso</small><strong class="num">${r.peso}</strong><em class="${ep.cls}" style="background:none;padding:0">${ep.txt} · meta ${pesoMeta}</em></div>
+        <div><small>Grasa</small><strong class="num">${r.grasa}%</strong>${eg ? `<em class="${eg.cls}" style="background:none;padding:0">${eg.txt} ${tope}%</em>` : ''}</div>
+        <div><small>Músculo</small><strong class="num">${r.musculo ?? '—'}</strong><em class="muted">visceral ${r.visceral ?? '—'}</em></div></div>`;
+      const ext = CAMPOS_INBODY.filter(c => !PRINCIPALES.includes(c.k) && r[c.k] != null).map(c => `${c.nombre} <b class="num">${r[c.k]}</b>${c.unidad ? ' ' + c.unidad : ''}`).join(' · ');
+      if (ext) kv += `<div class="extras">${ext}</div>`;
+      kv += recomendaciones(cp.fecha).map(x => `<div class="rec ${x.tono}"><b>${esc(x.titulo)}</b>${esc(x.texto)}</div>`).join('');
+    } else {
+      kv = `<div class="kv"><div><small>Peso meta</small><strong class="num">${pesoMeta}</strong></div><div><small>% meta</small><strong class="num">${cp.mantener ? 'Mant.' : cp.pct + '%'}</strong></div><div><small>Tope grasa</small><strong class="num">${tope != null ? tope + '%' : '—'}</strong></div></div>`;
+    }
+    const m = metas[cp.fecha];
+    html += `<div class="card cp ${isNext ? 'next' : ''}">
+      <div class="hd"><div><div class="date">${fCorta(cp.fecha)}</div><div class="ttl">Checkpoint ${i + 1}${cp.base ? ' · Línea base' : ''}</div></div>${badge}</div>
+      ${kv}
+      <div class="row" style="margin-top:12px"><button class="btn sm ${r ? 'ghost' : cp.fecha <= H ? 'primary' : 'ghost'}" data-action="inbody" data-v="${cp.fecha}">${r ? 'Editar InBody' : 'Capturar InBody'}</button>${r && r.archivo ? `<button class="btn sm ghost" data-action="ver-hoja" data-v="${cp.fecha}">Ver hoja</button>` : ''}</div>
+      <div class="goal"><div class="g">${esc(cp.meta)}</div><div class="tri">
+        <button class="${m === true ? 'on-ok' : ''}" data-action="meta" data-v="${cp.fecha}" data-m="si">Logrado</button>
+        <button class="${m === false ? 'on-no' : ''}" data-action="meta" data-v="${cp.fecha}" data-m="no">No</button></div></div>
+    </div>`;
+  });
+  return html;
+}
+
+/* ---------- PROGRESO ---------- */
+function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw))), n = raw / p; return (n < 1.5 ? 1 : n < 3 ? 2 : n < 7 ? 5 : 10) * p; }
+function lineChart(o) {
+  const W = 340, Hh = 180, L = 34, R = 16, T = 14, B = 24;
+  const x0 = o.xMin, x1 = o.xMax, span = diff(x0, x1);
+  const vals = [];
+  o.series.forEach(s => s.pts.forEach(p => vals.push(p.y)));
+  (o.hlines || []).forEach(h => vals.push(h.y));
+  (o.bands || []).forEach(b => vals.push(b.y0, b.y1));
+  if (!o.series.some(s => s.cls === 'real' && s.pts.length)) return `<div class="empty">${esc(o.vacio)}</div>`;
+  let lo = Math.min(...vals), hi = Math.max(...vals);
+  const pad = Math.max((hi - lo) * 0.12, o.minPad || 0.5); lo -= pad; hi += pad;
+  const step = niceStep((hi - lo) / 4); lo = Math.floor(lo / step) * step; hi = Math.ceil(hi / step) * step;
+  const X = s => (L + diff(x0, s) / span * (W - L - R)).toFixed(1);
+  const Y = v => (T + (hi - v) / (hi - lo) * (Hh - T - B)).toFixed(1);
+  let g = '';
+  (o.bands || []).forEach(b => { g += `<rect class="band" x="${L}" width="${W - L - R}" y="${Y(b.y1)}" height="${Y(b.y0) - Y(b.y1)}" rx="3"/>`; });
+  for (let v = lo; v <= hi + 1e-9; v += step) g += `<line class="grid" x1="${L}" x2="${W - R}" y1="${Y(v)}" y2="${Y(v)}"/><text class="axis num" x="${L - 6}" y="${+Y(v) + 3.5}" text-anchor="end">${step < 1 ? v.toFixed(1) : Math.round(v)}</text>`;
+  let [yy, mm] = x0.split('-').map(Number);
+  for (let k = 0; k < 8; k++) {
+    const s = `${yy}-${String(mm).padStart(2, '0')}-01`;
+    if (s > x1) break;
+    if (s >= x0) g += `<text class="axis" x="${X(s)}" y="${Hh - 6}" text-anchor="middle">${MESES[mm - 1]}</text>`;
+    mm++; if (mm > 12) { mm = 1; yy++; }
+  }
+  (o.hlines || []).forEach(h => { g += `<line class="tope" x1="${L}" x2="${W - R}" y1="${Y(h.y)}" y2="${Y(h.y)}"/><text class="tl" fill="var(--bad)" x="${W - R}" y="${+Y(h.y) - 5}" text-anchor="end">${esc(h.label)}</text>`; });
+  const H = hoy();
+  if (H >= x0 && H <= x1) g += `<line class="todayl" x1="${X(H)}" x2="${X(H)}" y1="${T}" y2="${Hh - B}"/>`;
+  o.series.forEach(s => {
+    if (!s.pts.length) return;
+    const d = s.pts.map((p, i) => `${i ? 'L' : 'M'}${X(p.x)} ${Y(p.y)}`).join(' ');
+    g += `<path class="${s.cls}" d="${d}"/>`;
+    if (s.cls === 'real') {
+      s.pts.forEach(p => { g += `<circle class="pt" cx="${X(p.x)}" cy="${Y(p.y)}" r="4.5"/>`; });
+      const last = s.pts[s.pts.length - 1];
+      g += `<text class="vl num" x="${X(last.x)}" y="${+Y(last.y) - 10}" text-anchor="${diff(x0, last.x) / span > .8 ? 'end' : 'middle'}">${last.y}</text>`;
+    }
+  });
+  return `<svg class="chart" viewBox="0 0 ${W} ${Hh}" role="img" aria-label="${esc(o.titulo)}">${g}</svg>`;
+}
+const legendHTML = items => `<div class="legend">${items.map(([c, t, dash]) => `<span><i style="${dash ? `background:none;border-top:2px dashed ${c};height:0;width:14px;border-radius:0` : `background:${c}`}"></i>${t}</span>`).join('')}</div>`;
+
+function vistaProgreso() {
+  const ib = inbodyAll(), keys = Object.keys(ib).sort(), base = lineaBase(), tope = topeGrasa();
+  const xMin = CONFIG.atleta.fechaPesoInicial, xMax = CONFIG.carrera.fecha;
+  const real = k => keys.filter(c => ib[c][k] != null && ib[c][k] !== '').map(c => ({ x: ib[c].fecha || c, y: +ib[c][k] }));
+
+  const metaPeso = [{ x: xMin, y: CONFIG.atleta.pesoInicial }, ...CONFIG.checkpoints.map(c => ({ x: c.fecha, y: c.rango ? (c.rango[0] + c.rango[1]) / 2 : c.peso })), { x: xMax, y: 69.75 }];
+  const pesoReal = [{ x: xMin, y: CONFIG.atleta.pesoInicial }, ...real('peso')];
+  const ultimo = pesoReal[pesoReal.length - 1];
+  const cpNext = CONFIG.checkpoints.find(c => c.fecha >= hoy());
+  let html = `<div class="card"><h2>Peso <small>${ultimo.y} kg${cpNext ? ` · próximo ${cpNext.rango ? cpNext.rango.join('–') : cpNext.peso}` : ''}</small></h2>
+    ${lineChart({ titulo: 'Peso real contra meta', xMin, xMax, minPad: 0.4, series: [{ cls: 'meta', pts: metaPeso }, { cls: 'real', pts: pesoReal }], vacio: '' })}
+    ${legendHTML([['var(--real)', 'Real'], ['var(--faint)', 'Meta', true]])}</div>`;
+
+  const grasa = real('grasa');
+  html += `<div class="card"><h2>% de grasa <small>${tope != null ? `tope ${tope}%` : 'sin línea base'}</small></h2>
+    ${lineChart({ titulo: 'Grasa contra tope', xMin, xMax, minPad: 0.6, series: [{ cls: 'real', pts: grasa }], hlines: tope != null ? [{ y: tope, label: `Tope ${tope}%` }] : [], bands: [{ y0: CONFIG.grasaIdealCarrera[0], y1: CONFIG.grasaIdealCarrera[1] }], vacio: 'Aparece con tu primer InBody (5 oct).' })}
+    ${legendHTML([['var(--real)', 'Real'], ['var(--bad)', 'Tope (base +1%)', true], ['var(--ok-bg)', `Ideal carrera ${CONFIG.grasaIdealCarrera.join('–')}%`]])}</div>`;
+
+  const musc = real('musculo');
+  let metaM = [];
+  if (base && base.musculo != null && base.musculo !== '') {
+    const b0 = +base.musculo, p0 = CONFIG.checkpoints[0].peso, span = CONFIG.atleta.pesoMeta - p0;
+    let fr = 0;
+    metaM = CONFIG.checkpoints.map(c => { fr = Math.max(fr, Math.min(1, (c.peso - p0) / span)); return { x: c.fecha, y: +(b0 + CONFIG.musculoMeta * fr).toFixed(1) }; });
+  }
+  html += `<div class="card"><h2>Masa muscular <small>${base && base.musculo ? `meta ≈ +${CONFIG.musculoMeta} kg` : ''}</small></h2>
+    ${lineChart({ titulo: 'Masa muscular esquelética', xMin, xMax, minPad: 0.4, series: [{ cls: 'meta', pts: metaM }, { cls: 'real', pts: musc }], vacio: 'Aparece con tu primer InBody (5 oct).' })}
+    ${legendHTML([['var(--real)', 'Real'], ['var(--faint)', 'Meta aprox.', true]])}</div>`;
+
+  html += `<div class="card"><h2>Tests <button class="btn sm primary" data-action="test" data-v="">+ Registrar</button></h2>`;
+  const all = testsAll();
+  if (!all.length) html += `<div class="empty">Primero: 1 km el mié 30 sep y 5 km el sáb 3 oct.</div>`;
+  Object.entries(CONFIG.tiposTest).forEach(([k, tt]) => {
+    const lst = all.filter(t => t.tipo === k); if (!lst.length) return;
+    const first = lst[0], last = lst[lst.length - 1], best = lst.reduce((a, b) => b.seg < a.seg ? b : a);
+    const delta = last.seg - first.seg;
+    let meta = '';
+    if (tt.mejora) { const obj = first.seg - tt.mejora; meta = `Meta: ${fTiempo(obj)} ${best.seg <= obj ? '✓' : ''}`; }
+    else if (tt.objetivo) meta = `Meta: ${fTiempo(tt.objetivo)} ${best.seg < tt.objetivo ? '✓' : ''}`;
+    else meta = tt.metaTxt;
+    html += `<div style="margin-top:14px"><div class="row between"><b>${esc(tt.nombre)}</b><span class="muted xs">${esc(meta)}</span></div>
+      <div class="kv" style="margin-top:8px"><div><small>Primero</small><strong class="num">${fTiempo(first.seg)}</strong></div>
+      <div><small>Mejor</small><strong class="num">${fTiempo(best.seg)}</strong>${tt.ritmo ? `<em class="muted">${fTiempo(best.seg / tt.ritmo)}/km</em>` : ''}</div>
+      <div><small>Cambio</small><strong class="num" style="color:${lst.length < 2 ? 'var(--muted)' : delta < 0 ? 'var(--ok)' : 'var(--warn)'}">${lst.length < 2 ? '—' : (delta <= 0 ? '−' : '+') + fTiempo(delta)}</strong></div></div>
+      ${lst.slice().reverse().map(t => `<div class="trow"><span class="grow muted small">${fCorta(t.fecha)}${t.nota ? ' · ' + esc(t.nota) : ''}</span><b class="num">${fTiempo(t.seg)}</b><button class="del" data-action="borrar-test" data-v="${t.id}" aria-label="Borrar">×</button></div>`).join('')}
+    </div>`;
+  });
+  html += `</div>`;
+  return html;
+}
+
+/* ---------- PLAN ---------- */
+function vistaPlan() {
+  const H = hoy(), perH = periodoDe(H) || CONFIG.periodos[0];
+  const sel = state.plan || perH.semana;
+  let html = `<div class="card"><h2>Fases <small>~20 semanas</small></h2>${CONFIG.fases.map(f => {
+    const cur = H >= f.inicio && H <= f.fin, past = H > f.fin;
+    return `<div class="phase ${cur ? 'cur' : ''} ${past ? 'past' : ''}"><div class="n">${f.n}</div><div><div class="row between"><span class="t">${f.nombre}</span>${cur ? '<span class="badge b-acc">Ahora</span>' : ''}</div>
+      <div class="muted xs">${fDia(f.inicio)} – ${fDia(f.fin)}</div><div class="small" style="margin-top:3px">${esc(f.objetivo)}</div></div></div>`;
+  }).join('')}</div>`;
+
+  const S = CONFIG.semanas[sel], dias = semanaTipo(sel);
+  const pers = CONFIG.periodos.filter(p => p.semana === sel);
+  const esActual = perH.semana === sel;
+  html += `<div class="card"><h2>Semana tipo ${semanaEditada(sel) ? '<span class="badge b-mute">Editada</span>' : ''}</h2>
+    <div class="hscroll">${Object.entries(CONFIG.semanas).map(([k, s]) => `<button class="chip ${k === sel ? 'accent' : ''}" data-action="plan-sel" data-v="${k}">${esc(s.nombre)}${perH.semana === k ? ' ·' : ''}</button>`).join('')}</div>
+    <div class="muted xs" style="margin-bottom:6px">${esc(S.rango)}${esActual ? ' · la que usas ahora' : ''}</div>
+    ${dias.map((d, i) => `<div class="pd ${esActual && dow(H) === i ? 'today' : ''}"><span class="dn">${DIAS_C[i]}</span><div><div class="row" style="gap:7px"><i class="chip" style="padding:0;width:9px;height:9px;background:${colorTipo(d.tipo)}"></i><span class="c">${esc(d.clase)}</span></div>
+      <div class="muted xs">${esc([d.hora, d.zona].filter(Boolean).join(' · '))}${d.nota ? ' · ' + esc(d.nota) : ''}</div></div></div>`).join('')}
+    <div class="row" style="margin-top:12px;gap:8px"><button class="btn sm" data-action="editar-semana" data-v="${sel}">Editar semana</button>
+      ${semanaEditada(sel) ? `<button class="btn sm ghost" data-action="restaurar-semana" data-v="${sel}">Restaurar original</button>` : ''}</div>
+    ${pers.map(p => `<div class="box" style="margin-top:12px"><b>Horario del Tec · ${esc(p.nombre)}</b>${esc(p.horarioEditable ? storage.get('horarioEnero', p.horario) : p.horario)}
+      ${p.horarioEditable ? `<div><button class="link" data-action="editar-horario">Editar horario</button></div>` : ''}</div>`).join('')}
+    ${sel === 'ultimo' ? '<p class="muted xs" style="margin:10px 0 0">Si el jueves no hay clase HYROX o tu compañero no puede, se queda en viernes y el upper pasa a jueves (botón en Hoy).</p>' : ''}
+  </div>`;
+
+  html += `<div class="card"><h2>Reglas y hábitos</h2>
+    <details><summary>Criterios para elegir clase</summary><ul>${['pierna', 'caminadora', 'upper', 'hyrox'].map(t => `<li><b>${CONFIG.tipos[t].nombre}:</b> ${esc(CONFIG.tipos[t].criterio)}${CONFIG.tipos[t].extra ? ' ' + esc(CONFIG.tipos[t].extra) : ''}</li>`).join('')}</ul></details>
+    <details><summary>Hábitos de cada semana</summary><ul><li>5 clases: lunes, miércoles, jueves, viernes y sábado.</li><li>4 comidas: desayuno, algo sólido en el Tec (no solo el licuado), comida (nunca saltarla) y cena.</li><li>~130 g de proteína al día (30–40 g por comida).</li><li>${esc(CONFIG.notasComida)}</li><li>Agua 2.5–3 L · creatina 3–5 g (opcional) · sueño 7–8 h.</li></ul></details>
+    <details><summary>Reglas de ajuste en cada InBody</summary><ul><li>Subió de peso y la grasa no pasó el tope → sigue igual.</li><li>El peso no se movió → comida extra (licuado de avena, plátano y proteína).</li><li>Grasa arriba de base +1% → baja un poco la cena, sin quitar proteína.</li><li>Más de 1 kg en 2 semanas → baja un poco la comida.</li><li>Desde enero: mantener 70 kg (±0.5).</li></ul></details>
+    <details><summary>La carrera</summary><ul><li>${CONFIG.carrera.nombre} · vie 19 feb 2027 · ${CONFIG.carrera.lugar}.</li><li>Doubles: ambos corren 8 × 1 km y se reparten las 8 estaciones.</li><li>Meta: sub 65 min. Estaciones a cuidar: wall balls y sled pull.</li></ul></details>
+  </div>`;
+  return html;
+}
+
+/* ---------- MODALES ---------- */
+function openModal(html) {
+  $('#modal').innerHTML = `<div class="backdrop" data-action="cerrar"></div><div class="sheet" role="dialog" aria-modal="true"><div class="grab"></div>${html}</div>`;
+  document.body.style.overflow = 'hidden';
+}
+function closeModal() { $('#modal').innerHTML = ''; document.body.style.overflow = ''; }
+const num = v => { const n = parseFloat(String(v).replace(',', '.')); return isNaN(n) ? null : n; };
+
+/* =====================================================================
+   LECTOR DE INBODY (PDF o foto) — todo en el teléfono, sin internet.
+   PDF con texto → PDF.js. PDF escaneado o imagen → OCR con Tesseract.
+   Etapa 2: el OCR se puede cambiar por Apple Vision (más preciso).
+   ===================================================================== */
+const VENDOR = {
+  pdf: 'vendor/pdfjs/pdf.min.js', pdfWorker: 'vendor/pdfjs/pdf.worker.min.js',
+  tess: 'vendor/tesseract/tesseract.min.js', tessWorker: 'vendor/tesseract/worker.min.js',
+  tessCore: 'vendor/tesseract/tesseract-core-lstm.wasm.js', tessLang: 'vendor/tesseract',
+};
+const PRINCIPALES = ['peso', 'grasa', 'musculo', 'visceral'];
+// Etiquetas en inglés y español (sin acentos, en minúsculas). El orden importa: la más específica primero.
+const CAMPOS_INBODY = [
+  { k: 'peso',      nombre: 'Peso', unidad: 'kg', ph: '66.0', rango: [35, 150], decimal: true, labels: [/\bweight\b/, /\bpeso\b/], excluir: /control|target|ideal|objetivo|ajuste|standard|estandar|meta/ },
+  { k: 'grasa',     nombre: '% de grasa', unidad: '%', ph: '14.0', rango: [3, 45], decimal: true, labels: [/percent body fat/, /porcentaje de grasa/, /%\s*de\s*grasa/, /\bpbf\b/, /\bpgc\b/], excluir: /visceral|control/ },
+  { k: 'musculo',   nombre: 'Músculo esquelético', unidad: 'kg', ph: '31.0', rango: [15, 60], decimal: true, labels: [/skeletal muscle mass/, /masa (del )?muscul[oa]r? esquelet/, /musculo esquelet/, /\bsmm\b/, /\bmme\b/], excluir: /control|ideal|objetivo/ },
+  { k: 'visceral',  nombre: 'Grasa visceral', unidad: 'nivel', ph: '4', rango: [1, 20], entero: true, labels: [/visceral fat level/, /nivel de grasa visceral/, /grasa visceral/, /visceral fat/], excluir: /area|cm2|cm²/ },
+  { k: 'masaGrasa', nombre: 'Masa de grasa', unidad: 'kg', ph: '9.0', rango: [2, 50], decimal: true, labels: [/body fat mass/, /masa (de )?grasa( corporal)?/, /\bbfm\b/], excluir: /visceral|percent|porcentaje|control/ },
+  { k: 'agua',      nombre: 'Agua corporal total', unidad: 'L', ph: '38.0', rango: [15, 80], decimal: true, labels: [/total body water/, /agua corporal total/, /agua corporal/, /\btbw\b/], excluir: /intra|extra/ },
+  { k: 'imc',       nombre: 'IMC', unidad: '', ph: '21.5', rango: [12, 45], decimal: true, labels: [/body mass index/, /indice de masa corporal/, /\bbmi\b/, /\bimc\b/] },
+  { k: 'tmb',       nombre: 'Metabolismo basal', unidad: 'kcal', ph: '1550', rango: [900, 3500], entero: true, labels: [/basal metabolic rate/, /metabolismo basal/, /tasa metabolica basal/, /\bbmr\b/, /\btmb\b/] },
+  { k: 'puntaje',   nombre: 'Puntaje InBody', unidad: 'pts', ph: '75', rango: [30, 100], entero: true, labels: [/inbody score/, /puntuacion inbody/, /puntaje inbody/, /puntuacion/, /puntaje/] },
+];
+
+const absUrl = p => new URL(p, location.href).href;
+const scriptsCargados = {};
+function cargarScript(src) {
+  if (!scriptsCargados[src]) scriptsCargados[src] = new Promise((res, rej) => {
+    const s = document.createElement('script'); s.src = src; s.onload = res;
+    s.onerror = () => { delete scriptsCargados[src]; rej(new Error('No encontré la librería ' + src + '. ¿Está la carpeta vendor junto al index.html?')); };
+    document.head.appendChild(s);
+  });
+  return scriptsCargados[src];
+}
+
+// Agrupa los pedazos de texto del PDF en renglones (misma altura), de izquierda a derecha.
+function lineasDePagina(tc) {
+  const items = tc.items.filter(i => i.str && i.str.trim()).map(i => ({ s: i.str, x: i.transform[4], y: i.transform[5], h: Math.abs(i.transform[3]) || 8 }));
+  items.sort((a, b) => b.y - a.y || a.x - b.x);
+  const lineas = [];
+  items.forEach(it => {
+    const l = lineas[lineas.length - 1];
+    if (l && Math.abs(l.y - it.y) <= Math.max(2, it.h * 0.45)) l.items.push(it); else lineas.push({ y: it.y, items: [it] });
+  });
+  return lineas.map(l => l.items.sort((a, b) => a.x - b.x).map(i => i.s).join(' ')).join('\n');
+}
+async function renderPagina(page, ancho) {
+  const vp0 = page.getViewport({ scale: 1 });
+  const vp = page.getViewport({ scale: ancho / vp0.width });
+  const c = document.createElement('canvas'); c.width = Math.round(vp.width); c.height = Math.round(vp.height);
+  const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height);
+  await page.render({ canvasContext: ctx, viewport: vp, intent: 'print' }).promise;  // 'print' no espera a la pantalla (sigue si la app pasa a segundo plano)
+  return c;
+}
+function canvasDeImagen(file, maxAncho) {
+  return new Promise((res, rej) => {
+    const url = URL.createObjectURL(file), img = new Image();
+    img.onload = () => {
+      const k = Math.min(1, maxAncho / img.naturalWidth);
+      const c = document.createElement('canvas'); c.width = Math.round(img.naturalWidth * k); c.height = Math.round(img.naturalHeight * k);
+      const ctx = c.getContext('2d'); ctx.fillStyle = '#fff'; ctx.fillRect(0, 0, c.width, c.height); ctx.drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url); res(c);
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); rej(new Error('No pude abrir esa imagen.')); };
+    img.src = url;
+  });
+}
+function miniatura(canvas, ancho) {
+  const k = Math.min(1, ancho / canvas.width);
+  const c = document.createElement('canvas'); c.width = Math.round(canvas.width * k); c.height = Math.round(canvas.height * k);
+  c.getContext('2d').drawImage(canvas, 0, 0, c.width, c.height);
+  return c.toDataURL('image/jpeg', 0.7);
+}
+async function ocr(canvas, onPct) {
+  await cargarScript(VENDOR.tess);
+  const worker = await Tesseract.createWorker('eng', 1, {
+    workerPath: absUrl(VENDOR.tessWorker), corePath: absUrl(VENDOR.tessCore), langPath: absUrl(VENDOR.tessLang),
+    gzip: true, cacheMethod: 'none', workerBlobURL: false,
+    logger: m => { if (m.status === 'recognizing text') onPct(Math.round(m.progress * 100)); },
+  });
+  try { return (await worker.recognize(canvas)).data.text; } finally { await worker.terminate(); }
+}
+
+const normTxt = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase()
+  .replace(/(\d),(\d{3})(?!\d)/g, '$1$2').replace(/(\d),(\d)/g, '$1.$2');
+function numerosDe(seg) {
+  seg = seg.replace(/\([^)]*\)/g, ' ')                                   // rangos normales entre paréntesis
+    .replace(/\d+(?:\.\d+)?\s*[~～∼]\s*\d+(?:\.\d+)?/g, ' ')              // 55.8~75.4
+    .replace(/\d+(?:\.\d+)?\s+[-–]\s+\d+(?:\.\d+)?/g, ' ');               // 55.8 - 75.4
+  const toks = [...seg.matchAll(/\d+(?:\.\d+)?/g)].map(m => ({ s: m[0], v: parseFloat(m[0]) }));
+  // Quita las escalas de las barras (55 70 85 100 …): 3+ números seguidos con el mismo salto.
+  const fuera = new Set();
+  for (let i = 0; i + 2 < toks.length; i++) {
+    const d = toks[i + 1].v - toks[i].v; if (Math.abs(d) < 1e-9) continue;
+    let j = i + 1;
+    while (j + 1 < toks.length && Math.abs(toks[j + 1].v - toks[j].v - d) < 0.051) j++;
+    if (j - i >= 2) { for (let k = i; k <= j; k++) fuera.add(k); i = j; }
+  }
+  return toks.filter((_, i) => !fuera.has(i));
+}
+function elegirNumero(toks, c) {
+  const ok = toks.filter(t => t.v >= c.rango[0] && t.v <= c.rango[1] && (!c.entero || Number.isInteger(t.v)));
+  if (c.decimal) { const dec = ok.find(t => t.s.includes('.')); if (dec) return dec.v; }
+  return ok.length ? ok[0].v : null;
+}
+function valorCampo(lineas, c) {
+  const soloNumeros = l => !/[a-z]{4,}/.test(l.replace(/kcal|points|puntos|level|nivel/g, ''));
+  for (const re of c.labels) {
+    for (let i = 0; i < lineas.length; i++) {
+      const L = lineas[i], m = L.match(re); if (!m) continue;
+      const fin = m.index + m[0].length;
+      if (c.excluir && c.excluir.test(L.slice(Math.max(0, m.index - 16), fin + 10))) continue;
+      let tras = L.slice(fin);
+      // palabras de relleno que pueden ir entre la etiqueta y el número ("porcentaje de grasa corporal (%) 14.5")
+      const w = tras.search(/\b(?!(?:kcal|points|puntos|level|nivel|corporal|corporales|total|body|percent|porcentaje|index|indice)\b)[a-z]{4,}/);
+      if (w >= 0) tras = tras.slice(0, w);                                 // corta donde empieza otro dato
+      const v = elegirNumero(numerosDe(tras), c);
+      if (v != null) return v;
+      const sig = lineas[i + 1];
+      if (sig && soloNumeros(sig)) { const v2 = elegirNumero(numerosDe(sig), c); if (v2 != null) return v2; }
+    }
+  }
+  return null;
+}
+function fechaDe(t) {
+  const ok = (y, m, d) => (m >= 1 && m <= 12 && d >= 1 && d <= 31) ? `${y}-${String(m).padStart(2, '0')}-${String(d).padStart(2, '0')}` : null;
+  let m = t.match(/(20\d{2})[.\-/](\d{1,2})[.\-/](\d{1,2})/);
+  if (m) return ok(+m[1], +m[2], +m[3]);
+  m = t.match(/(\d{1,2})[.\-/](\d{1,2})[.\-/](20\d{2})/);
+  if (m) return +m[2] > 12 ? ok(+m[3], +m[1], +m[2]) : ok(+m[3], +m[2], +m[1]);   // en México: día/mes/año
+  return null;
+}
+function analizarTextoInBody(texto) {
+  const lineas = texto.split('\n').map(normTxt).filter(l => l.trim());
+  const valores = {};
+  CAMPOS_INBODY.forEach(c => { const v = valorCampo(lineas, c); if (v != null) valores[c.k] = v; });
+  return { valores, fecha: fechaDe(normTxt(texto)) };
+}
+async function leerInBody(file, estado) {
+  const esPDF = file.type === 'application/pdf' || /\.pdf$/i.test(file.name);
+  let texto = '', canvas, via = 'pdf';
+  if (esPDF) {
+    estado('Abriendo el PDF…');
+    await cargarScript(VENDOR.pdf);
+    pdfjsLib.GlobalWorkerOptions.workerSrc = VENDOR.pdfWorker;
+    const pdf = await pdfjsLib.getDocument({ data: new Uint8Array(await file.arrayBuffer()) }).promise;
+    const partes = [];
+    for (let p = 1; p <= Math.min(pdf.numPages, 3); p++) partes.push(lineasDePagina(await (await pdf.getPage(p)).getTextContent()));
+    texto = partes.join('\n');
+    canvas = await renderPagina(await pdf.getPage(1), 1800);
+  } else {
+    estado('Abriendo la imagen…');
+    canvas = await canvasDeImagen(file, 2000);
+  }
+  let res = analizarTextoInBody(texto);
+  // PDF escaneado, foto, o PDF cuyo texto no se pudo leer bien → OCR
+  if (texto.replace(/\s/g, '').length < 80 || PRINCIPALES.filter(k => res.valores[k] != null).length < 2) {
+    estado('Leyendo la hoja… (puede tardar unos 20 s)');
+    texto = await ocr(canvas, pct => estado(`Leyendo la hoja… ${pct}%`));
+    res = analizarTextoInBody(texto); via = 'ocr';
+  }
+  return { ...res, texto, via, nombre: file.name, thumb: miniatura(canvas, 900) };
+}
+function cpParaFecha(f) {
+  const H = hoy(), ib = inbodyAll();
+  if (f) {
+    let best = null;
+    CONFIG.checkpoints.forEach(c => { const d = Math.abs(diff(c.fecha, f)); if (d <= 7 && (!best || d < best.d)) best = { c, d }; });
+    if (best) return best.c.fecha;
+  }
+  const pend = CONFIG.checkpoints.filter(c => !ib[c.fecha] && c.fecha <= H).pop();
+  if (pend) return pend.fecha;
+  return (CONFIG.checkpoints.find(c => c.fecha >= H) || CONFIG.checkpoints[CONFIG.checkpoints.length - 1]).fecha;
+}
+async function procesarArchivoInBody(file, cpElegido) {
+  openModal(`<h2>Leyendo tu InBody</h2><p class="muted small" id="ib-estado" style="margin:0">Preparando…</p><div class="spinner"></div><p class="muted xs" style="text-align:center">Todo se lee aquí en tu teléfono. No se sube a ningún lado.</p>`);
+  const estado = t => { const el = $('#ib-estado'); if (el) el.textContent = t; };
+  try {
+    const res = await leerInBody(file, estado);
+    modalInBody(cpElegido || cpParaFecha(res.fecha), res);
+  } catch (err) {
+    console.error(err);
+    const cp = cpElegido || cpParaFecha(null);
+    openModal(`<h2>No pude leer el archivo</h2><p class="muted">${esc(err && err.message || err)}</p>
+      <button class="btn primary block" data-action="inbody" data-v="${cp}">Capturar a mano</button>
+      <button class="btn ghost block" style="margin-top:8px" data-action="cerrar">Cerrar</button>`);
+  }
+}
+const botonSubir = (cp, txt) => `<label class="btn block">${txt}<input type="file" class="ib-file" ${cp ? `data-cp="${cp}"` : ''} accept="application/pdf,.pdf,image/*" hidden></label>`;
+let archivoPendiente = null;   // hoja leída que se guarda junto con el InBody
+
+function modalInBody(fecha, pre) {
+  const ib = inbodyAll();
+  const cp = CONFIG.checkpoints.find(c => c.fecha === fecha), idx = CONFIG.checkpoints.indexOf(cp);
+  const r = pre ? { ...pre.valores, fecha: pre.fecha } : (ib[fecha] || {});
+  archivoPendiente = pre ? { nombre: pre.nombre, thumb: pre.thumb } : null;
+  const falta = k => pre && pre.valores[k] == null;
+  const inp = c => `<label class="field"><span>${c.nombre}${c.unidad ? ` (${c.unidad})` : ''}${falta(c.k) && PRINCIPALES.includes(c.k) ? ' <em class="miss">· no lo encontré</em>' : ''}</span>
+    <input class="input num ${pre && !falta(c.k) ? 'leido' : ''}" id="ib-${c.k}" inputmode="decimal" value="${r[c.k] ?? ''}" placeholder="${c.ph}"></label>`;
+  const princ = CAMPOS_INBODY.filter(c => PRINCIPALES.includes(c.k)), extras = CAMPOS_INBODY.filter(c => !PRINCIPALES.includes(c.k));
+  const leidos = pre ? PRINCIPALES.filter(k => pre.valores[k] != null).length : 0;
+  const cabeza = pre
+    ? `<h2>Revisa lo que leí</h2><div class="alert ${leidos === 4 ? 'acc' : 'warn'}" style="margin-top:8px"><div class="ic">${leidos}/4</div><div class="grow">
+        <b>${leidos === 4 ? 'Encontré tus 4 medidas principales' : leidos ? 'Encontré algunas medidas' : 'No encontré las medidas'}</b>
+        <p>${pre.via === 'ocr' ? 'Leí la hoja como imagen: revisa bien los números.' : 'Leí el texto del PDF.'} Compáralos con tu hoja antes de guardar${pre.fecha ? ` · fecha detectada: ${fCorta(pre.fecha)}` : ''}.</p></div></div>`
+    : `<h2>InBody · Checkpoint ${idx + 1}</h2><p class="muted small" style="margin:0 0 12px">${fLarga(fecha)} · meta ${cp.rango ? cp.rango.join('–') : cp.peso} kg${cp.base ? ' · este fija tu línea base' : ''}</p>
+       ${botonSubir(fecha, 'Subir PDF o foto del InBody')}<p class="muted xs" style="text-align:center;margin:8px 0 0">o escríbelo a mano:</p>`;
+  openModal(`${cabeza}
+    <label class="field"><span>Checkpoint</span><select class="input" id="ib-cp">${CONFIG.checkpoints.map((c, i) => `<option value="${c.fecha}" ${c.fecha === fecha ? 'selected' : ''}>${i + 1} · ${fCorta(c.fecha)} · meta ${c.rango ? c.rango.join('–') : c.peso} kg${ib[c.fecha] && c.fecha !== fecha ? ' · ya capturado' : ''}</option>`).join('')}</select></label>
+    <label class="field"><span>Fecha en que te mediste</span><input class="input" type="date" id="ib-fecha" value="${r.fecha || fecha}"></label>
+    <div class="grid2">${princ.map(inp).join('')}</div>
+    <details ${extras.some(c => r[c.k] != null) ? 'open' : ''} style="margin-top:12px"><summary class="small">Más medidas (opcional)</summary><div class="grid2">${extras.map(inp).join('')}</div></details>
+    ${pre && pre.thumb ? `<details><summary class="small">Ver la hoja</summary><img class="hoja" src="${pre.thumb}" alt="Hoja del InBody"></details>` : ''}
+    ${pre ? `<details><summary class="small">Ver el texto que leí</summary><pre class="ocr">${esc(pre.texto.slice(0, 4000) || '(vacío)')}</pre></details>` : ''}
+    <p class="muted xs">${esc(CONFIG.protocoloInBody)}</p>
+    <button class="btn primary block" style="margin-top:8px" data-action="guardar-inbody" data-v="${fecha}">Guardar</button>
+    ${!pre && r.peso != null ? `<button class="btn ghost block" style="margin-top:8px" data-action="borrar-inbody" data-v="${fecha}">Borrar este InBody</button>` : ''}
+    <button class="btn ghost block" style="margin-top:8px" data-action="cerrar">Cancelar</button>`);
+}
+function modalTest(tipo) {
+  openModal(`<h2>Registrar test</h2>
+    <label class="field"><span>Tipo</span><select class="input" id="t-tipo">${Object.entries(CONFIG.tiposTest).map(([k, t]) => `<option value="${k}" ${k === tipo ? 'selected' : ''}>${t.nombre}</option>`).join('')}</select></label>
+    <div class="grid2"><label class="field"><span>Fecha</span><input class="input" type="date" id="t-fecha" value="${state.fecha || hoy()}"></label>
+    <label class="field"><span>Tiempo (m:ss o h:mm:ss)</span><input class="input num" id="t-tiempo" inputmode="text" placeholder="4:05" autocomplete="off"></label></div>
+    <label class="field"><span>Nota (opcional)</span><input class="input" id="t-nota" placeholder="Ej. caminadora 1% inclinación"></label>
+    <button class="btn primary block" style="margin-top:14px" data-action="guardar-test">Guardar</button>
+    <button class="btn ghost block" style="margin-top:8px" data-action="cerrar">Cancelar</button>`);
+}
+function modalSemana(id) {
+  const dias = semanaTipo(id);
+  const opts = t => Object.entries(CONFIG.tipos).filter(([k]) => k !== 'carrera').map(([k, v]) => `<option value="${k}" ${k === t ? 'selected' : ''}>${v.nombre}</option>`).join('');
+  openModal(`<h2>Editar: ${esc(CONFIG.semanas[id].nombre)}</h2><p class="muted small" style="margin:0">Los cambios aplican a todos los días de este periodo.</p>
+    ${dias.map((d, i) => `<div class="edday"><b>${DIAS[i]}</b>
+      <div class="grid2"><label class="field"><span>Tipo</span><select class="input" id="e-tipo-${i}">${opts(d.tipo)}</select></label>
+      <label class="field"><span>Hora</span><input class="input" id="e-hora-${i}" value="${esc(d.hora)}"></label></div>
+      <label class="field"><span>Clase</span><input class="input" id="e-clase-${i}" value="${esc(d.clase)}"></label>
+      <div class="grid2"><label class="field"><span>Zona</span><input class="input" id="e-zona-${i}" value="${esc(d.zona)}"></label>
+      <label class="field"><span>Nota</span><input class="input" id="e-nota-${i}" value="${esc(d.nota)}"></label></div></div>`).join('')}
+    <button class="btn primary block" style="margin-top:14px" data-action="guardar-semana" data-v="${id}">Guardar semana</button>
+    <button class="btn ghost block" style="margin-top:8px" data-action="cerrar">Cancelar</button>`);
+}
+function modalAjustes() {
+  const dias = Object.keys(storage.get('dias', {})).length, ib = Object.keys(inbodyAll()).length, ts = testsAll().length;
+  openModal(`<h2>Ajustes y respaldo</h2><p class="muted small" style="margin:0">${dias} días registrados · ${ib} InBody · ${ts} tests${storage.ready() ? '' : ' · ⚠️ este navegador no está guardando datos'}</p>
+    <div class="card" style="margin-top:14px"><h2>Respaldo</h2><p class="muted small" style="margin:0 0 12px">Exporta tus datos de vez en cuando y guárdalos en Archivos o iCloud.</p>
+      <button class="btn primary block" data-action="exportar">Exportar JSON</button>
+      ${navigator.share ? '<button class="btn block" style="margin-top:8px" data-action="compartir">Compartir respaldo…</button>' : ''}
+      <label class="btn block" style="margin-top:8px">Importar archivo JSON<input type="file" id="imp-file" accept="application/json,.json" hidden></label>
+      <details style="margin-top:10px;border:0;padding:0"><summary class="small">Pegar JSON a mano</summary><textarea class="input" id="imp-text" placeholder='{"app":"hyrox-santiago",...}'></textarea><button class="btn sm block" style="margin-top:8px" data-action="importar-texto">Importar texto</button></details>
+    </div>
+    <div class="card" style="margin-top:12px"><h2>Zona peligrosa</h2><p class="muted small" style="margin:0 0 12px">Borra todo: días, InBody, tests y semanas editadas.</p>
+      <button class="btn ghost block" style="color:var(--bad)" data-action="reset-1">Reiniciar datos</button></div>
+    <p class="muted xs" style="text-align:center;margin-top:14px">HYROX Santiago · v1 · Funciona sin internet${fechaDebug ? ` · fecha simulada ${fechaDebug}` : ''}</p>
+    <button class="btn ghost block" data-action="cerrar">Cerrar</button>`);
+  $('#imp-file').addEventListener('change', e => {
+    const file = e.target.files[0]; if (!file) return;
+    const rd = new FileReader();
+    rd.onload = () => importar(rd.result);
+    rd.readAsText(file);
+  });
+}
+function importar(texto) {
+  try {
+    const obj = JSON.parse(texto);
+    storage.importAll(obj);
+    closeModal(); render(); toast('Datos importados');
+  } catch (e) { toast(e.message.includes('respaldo') ? e.message : 'No pude leer ese JSON'); }
+}
+function archivoRespaldo() {
+  const blob = new Blob([JSON.stringify(storage.exportAll(), null, 2)], { type: 'application/json' });
+  return { blob, name: `hyrox-santiago-${hoy()}.json` };
+}
+
+/* ---------- ACCIONES ---------- */
+const ACTIONS = {
+  tab(d) { state.tab = d.v; if (d.v !== 'hoy') state.fecha = null; render(); window.scrollTo(0, 0); },
+  'ver-dia'(d) { state.fecha = d.v === hoy() ? null : d.v; render(); },
+  'ver-hoy'() { state.fecha = null; render(); },
+  semana(d) { state.fecha = addDays(state.fecha || hoy(), +d.v); if (state.fecha === hoy()) state.fecha = null; render(); },
+  clase(d) {
+    const f = state.fecha || hoy(); const cur = diaLog(f).clase;
+    const v = cur === d.v ? null : d.v;
+    setDia(f, { clase: v });
+    render();
+    if (v === 'hecha') {
+      const l = lunesDe(f), meta = metaSemana(l), dias = storage.get('dias', {});
+      let n = 0; for (let i = 0; i < 7; i++) if ((dias[addDays(l, i)] || {}).clase === 'hecha') n++;
+      toast(n === meta ? `¡Semana completa! ${n}/${meta}` : `Registrada · ${n}/${meta} esta semana`);
+    }
+  },
+  comida(d) { const f = state.fecha || hoy(), c = diaLog(f).comidas.slice(); c[+d.v] = !c[+d.v]; setDia(f, { comidas: c }); render(); if (habitosOk(diaLog(f)) && c[+d.v]) toast('Día de racha cumplido'); },
+  habito(d) { const f = state.fecha || hoy(), l = diaLog(f); setDia(f, { [d.v]: !l[d.v] }); render(); if (d.v === 'proteina' && !l.proteina && habitosOk(diaLog(f))) toast('Día de racha cumplido'); },
+  swap() { const l = lunesDe(state.fecha || hoy()), s = storage.get('swaps', {}); if (s[l]) delete s[l]; else s[l] = true; storage.set('swaps', s); render(); toast(s[l] ? 'Jueves y viernes intercambiados' : 'Semana normal'); },
+  heat(d) { state.heat = d.v; render(); },
+  meta(d, el) { const m = storage.get('metas', {}), v = el.dataset.m === 'si'; if (m[d.v] === v) delete m[d.v]; else m[d.v] = v; storage.set('metas', m); render(); },
+  inbody(d) { modalInBody(d.v); },
+  'guardar-inbody'(d) {
+    const peso = num($('#ib-peso').value), grasa = num($('#ib-grasa').value);
+    if (peso == null || peso < 30 || peso > 150) return toast('Revisa el peso');
+    if (grasa == null || grasa < 2 || grasa > 50) return toast('Revisa el % de grasa');
+    const ib = inbodyAll(), key = $('#ib-cp').value || d.v, previo = ib[d.v] || {};
+    const reg = { fecha: $('#ib-fecha').value || key };
+    CAMPOS_INBODY.forEach(c => { const v = num($('#ib-' + c.k).value); if (v != null) reg[c.k] = v; });
+    const archivo = archivoPendiente || previo.archivo;
+    if (archivo) reg.archivo = archivo;
+    if (key !== d.v && !archivoPendiente) delete ib[d.v];   // lo movieron de checkpoint
+    ib[key] = reg;
+    let aviso = null;
+    if (!storage.set('inbody', ib)) { delete reg.archivo; storage.set('inbody', ib); aviso = 'Guardado, pero sin la imagen: ya no hay espacio'; }
+    archivoPendiente = null;
+    closeModal(); render();
+    const r = recomendaciones(key)[0];
+    toast(aviso || (r ? r.titulo : 'InBody guardado'));
+  },
+  'ver-hoja'(d) {
+    const r = inbodyAll()[d.v]; if (!r || !r.archivo) return;
+    openModal(`<h2>Hoja del InBody</h2><p class="muted small" style="margin:0">${fLarga(r.fecha || d.v)} · ${esc(r.archivo.nombre || '')}</p>
+      <img class="hoja" src="${r.archivo.thumb}" alt="Hoja del InBody"><button class="btn ghost block" style="margin-top:12px" data-action="cerrar">Cerrar</button>`);
+  },
+  'borrar-inbody'(d) { if (!confirm('¿Borrar este InBody?')) return; const ib = inbodyAll(); delete ib[d.v]; storage.set('inbody', ib); closeModal(); render(); },
+  test(d) { modalTest(d.v || '1km'); },
+  'guardar-test'() {
+    const seg = parseTiempo($('#t-tiempo').value);
+    if (!seg) return toast('Escribe el tiempo, ej. 4:05');
+    const ts = storage.get('tests', []);
+    ts.push({ id: Date.now().toString(36), tipo: $('#t-tipo').value, fecha: $('#t-fecha').value || hoy(), seg, nota: $('#t-nota').value.trim() });
+    storage.set('tests', ts); closeModal(); render(); toast(`Guardado: ${fTiempo(seg)}`);
+  },
+  'borrar-test'(d) { if (!confirm('¿Borrar este registro?')) return; storage.set('tests', storage.get('tests', []).filter(t => t.id !== d.v)); render(); },
+  'plan-sel'(d) { state.plan = d.v; render(); },
+  'editar-semana'(d) { modalSemana(d.v); },
+  'guardar-semana'(d) {
+    const dias = [0, 1, 2, 3, 4, 5, 6].map(i => ({ tipo: $(`#e-tipo-${i}`).value, hora: $(`#e-hora-${i}`).value.trim(), clase: $(`#e-clase-${i}`).value.trim() || CONFIG.tipos[$(`#e-tipo-${i}`).value].nombre, zona: $(`#e-zona-${i}`).value.trim(), nota: $(`#e-nota-${i}`).value.trim() }));
+    const ed = storage.get('semanas', {}); ed[d.v] = dias; storage.set('semanas', ed);
+    closeModal(); state.plan = d.v; render(); toast('Semana guardada');
+  },
+  'restaurar-semana'(d) { if (!confirm('¿Regresar a la semana original?')) return; const ed = storage.get('semanas', {}); delete ed[d.v]; storage.set('semanas', ed); render(); },
+  'editar-horario'() {
+    const p = CONFIG.periodos.find(x => x.horarioEditable);
+    openModal(`<h2>Horario de enero</h2><label class="field"><span>Tus clases del Tec</span><textarea class="input" id="h-txt" style="font-family:inherit;font-size:16px">${esc(storage.get('horarioEnero', ''))}</textarea></label>
+      <button class="btn primary block" style="margin-top:12px" data-action="guardar-horario">Guardar</button><button class="btn ghost block" style="margin-top:8px" data-action="cerrar">Cancelar</button>`);
+    void p;
+  },
+  'guardar-horario'() { const t = $('#h-txt').value.trim(); if (t) storage.set('horarioEnero', t); else storage.remove('horarioEnero'); closeModal(); render(); },
+  ajustes() { modalAjustes(); },
+  cerrar() { closeModal(); },
+  exportar() {
+    const { blob, name } = archivoRespaldo();
+    const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+    document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+    toast('Respaldo exportado');
+  },
+  async compartir() {
+    const { blob, name } = archivoRespaldo();
+    const file = new File([blob], name, { type: 'application/json' });
+    try {
+      if (navigator.canShare && navigator.canShare({ files: [file] })) await navigator.share({ files: [file], title: 'Respaldo HYROX' });
+      else await navigator.share({ title: 'Respaldo HYROX', text: JSON.stringify(storage.exportAll()) });
+    } catch (e) { /* cancelado */ }
+  },
+  'importar-texto'() { importar($('#imp-text').value); },
+  'reset-1'() {
+    openModal(`<h2>¿Seguro?</h2><p class="muted">Se borra todo lo que has registrado. Si no tienes respaldo, no hay forma de recuperarlo.</p>
+      <button class="btn primary block" data-action="exportar">Exportar respaldo primero</button>
+      <button class="btn danger block" style="margin-top:8px" data-action="reset-2">Sí, borrar todo</button>
+      <button class="btn ghost block" style="margin-top:8px" data-action="cerrar">Cancelar</button>`);
+  },
+  'reset-2'() { storage.clear(); state.fecha = null; closeModal(); render(); toast('Datos reiniciados'); },
+};
+
+document.addEventListener('click', e => {
+  const el = e.target.closest('[data-action]');
+  if (!el || el.disabled) return;
+  const fn = ACTIONS[el.dataset.action];
+  if (fn) { e.preventDefault(); fn(el.dataset, el); }
+});
+document.addEventListener('change', e => {
+  if (!e.target.matches('.ib-file')) return;
+  const file = e.target.files && e.target.files[0]; if (!file) return;
+  procesarArchivoInBody(file, e.target.dataset.cp || null);
+});
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeModal(); });
+// Si la app queda abierta y cambia el día (o regresa del fondo), refresca.
+let ultimoDia = hoy();
+document.addEventListener('visibilitychange', () => { if (!document.hidden && hoy() !== ultimoDia) { ultimoDia = hoy(); state.fecha = null; render(); } });
+
+(async function main() {
+  await storage.init();
+  if (fechaDebug) document.body.insertAdjacentHTML('beforeend', `<div class="debug">Fecha simulada: ${fechaDebug}</div>`);
+  render();
+})();
+</script>
+</body>
+</html>
